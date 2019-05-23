@@ -35,6 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //   outputStyle: 'expanded'
 // }));
 app.use(express.static("public"));
+app.use(express.static("./node_modules"))
 
 // Mount all resource routes
 app.use("/api/users", usersRoutes(knex));
@@ -43,6 +44,15 @@ app.use("/api/users", usersRoutes(knex));
 app.get("/", (req, res) => {
   res.render("index");
 });
+
+app.get("/gamecentre", (req, res) => {
+  res.render("gamecentre");
+});
+
+app.get("/game", (req, res) => {
+  res.render("game");
+});
+
 
 app.listen(PORT, () => {
   console.log("Example app listening on port " + PORT);
