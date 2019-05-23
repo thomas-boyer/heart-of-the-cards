@@ -17,29 +17,31 @@
     <title>Heart of the Cards | Home </title>
   </head>
   <body>
-    <!-- <header>
+    <header>
       <nav class="navbar navbar-light">
         <a class="navbar-brand" href="#">
           <img src="../public/images/heart-of-cards-logo.png" class="hotc-logo" alt="">
         </a>
       </nav>
-    </header> -->
-    <main class="container-fluid">
-      <article class="hp-logo-container">
-        <img src="../public/images/heart-of-cards-logo.png" class="hp-logo" alt="">
-      </article>
-      <article class="coh-home">
-        <div class="card">
-          <div class="card-body">
-            <form method="post" action="/gamecentre.html">
-              <h1>Login!</h1>
-              <div class="form-group">
-                <!-- <label for="exampleInputEmail1">Email address</label> -->
-                <input type="text" class="form-control" id="username" aria-describedby="emailHelp" placeholder="Enter email">
-              </div>
-              <button type="submit" class="btn btn-primary float-right">Submit</button>
-            </form>
+    </header>
+    <main class="container-fluid game-centre">
+      <article>
+        <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+            <h1 class="display-4">Current Games</h1>
+            <p class="lead"><a href="">Game One</a> <a href="">Game Two</a> <a href="">Game Three</a></p>
           </div>
+        </div>
+      </article>
+      <article class="row">
+        <div class="col">
+          <button type="button" class="btn btn-primary btn-lg btn-block">Game Archive</button>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-primary btn-lg btn-block">New Game</button>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-primary btn-lg btn-block">Leaderboard</button>
         </div>
       </article>
     </main>
