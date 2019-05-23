@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="node_modules/deck-of-cards/example/example.css">
+</head>
+<body>
+
+<div id="container"></div>
+
+<script src="node_modules/deck-of-cards/dist/deck.min.js"></script>
+<script>
+  var $container = document.getElementById('container');
+  var deck = Deck();
+
+  // Select the first card
+  var card = deck.cards[0];
+
+  // Add it to an html container
+  card.mount($container);
+
+  // Allow to move/drag it
+  card.enableDragging();
+
+// Allow to flip it
+card.enableFlipping();
+// Allow to move/drag it
+card.flip();
+
+</script>
+</body>
+</html>
