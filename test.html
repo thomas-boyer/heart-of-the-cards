@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles/style.css"/>
+  <link rel="stylesheet" href="node_modules/deck-of-cards/example/example.css">
+</head>
+<body>
+  <div id="container"></div>
+
+<script src="node_modules/deck-of-cards/dist/deck.min.js"></script>
+<script>
+  var $container = document.getElementById('container');
+  // create Deck
+  const deck = new Deck();
+  const card = deck.cards[28];
+  // add to DOM
+  card.mount($container);
+  card.setSide('front');
+  console.log(card);
+
+</script>
+</body>
+</html>
