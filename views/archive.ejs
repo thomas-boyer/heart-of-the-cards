@@ -17,36 +17,46 @@
     <title>Heart of the Cards | Gamecentre </title>
   </head>
   <body>
-    <nav class="navbar navbar-light">
-        <a class="navbar-brand" href="/">
-          <img src="/images/heart-of-cards-logo.png" class="hotc-logo" alt="">
-        </a>
-        <a href="/gamecentre" class="active">Gamecentre</a>
-        <a href="/game">Game</a>
-        <a href="/leaderboard">Leaderboard</a>
-        <a href="/archive">Archive</a>
-        <button class="float-right btn btn-warning">Notifications</button>
-    </nav>
+    <header>
+      <nav class="navbar navbar-light">
+          <a class="navbar-brand" href="/">
+            <img src="/images/heart-of-cards-logo.png" class="hotc-logo" alt="">
+          </a>
+          <a href="/gamecentre" >Gamecentre</a>
+          <a href="/game">Game</a>
+          <a href="/leaderboard">Leaderboard</a>
+          <a href="/archive" class="active">Archive</a>
+          <button class="float-right btn btn-warning">Notifications</button>
+      </nav>
     </header>
-    <main class="container-fluid game-centre">
+    <main class="container-fluid leaderboard">
       <article>
-        <div class="jumbotron jumbotron-fluid">
-          <div class="container">
-            <h1 class="display-4">Current Games</h1>
-            <p class="lead"><a href="">Game One</a> <a href="">Game Two</a> <a href="">Game Three</a></p>
-          </div>
-        </div>
-      </article>
-      <article class="row">
-        <div class="col">
-          <button type="button" href="archive.ejs" class="btn btn-primary btn-lg btn-block">Game Archive</button>
-        </div>
-        <div class="col">
-          <button type="button" href="game.ejs" class="btn btn-primary btn-lg btn-block">New Game</button>
-        </div>
-        <div class="col">
-          <button type="button" href="leaderboard.ejs" class="btn btn-primary btn-lg btn-block">Leaderboard</button>
-        </div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Username</th>
+              <th scope="col">Games Won</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td>Mark</td>
+              <td>Otto</td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>Jacob</td>
+              <td>Thornton</td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Larry the Bird</td>
+              <td>@twitter</td>
+            </tr>
+          </tbody>
+        </table>
       </article>
     </main>
     <!-- Optional JavaScript -->
@@ -56,4 +66,3 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
 </html>
-
