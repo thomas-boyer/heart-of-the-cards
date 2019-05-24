@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 
-
     <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
     <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
 
@@ -22,6 +21,7 @@
     <link rel="stylesheet" href="/styles/styles.css" type="text/css" />
 
     <title>Heart of the Cards | Game Play </title>
+    <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
     <header>
@@ -101,7 +101,38 @@
       deck.cards.forEach(function (card){
         card.enableDragging();
         card.enableFlipping();
-        //deck.flip();
+      })
+    </script>
+
+    <script>
+      // Identify the IP address and PORT that a socket will connect to.
+      const socket = io.connect('http://172.46.2.110:8080');
+
+      socket.on('welcome', function (message) {
+        console.log(JSON.parse(message)['message']);
+      });
+
+      socket.on('player1turn', function (message) {
+        console.log(message)
+
+        $('.card').click(function (event) {
+          event.preventDefault();
+          socket.emit('card-pick', $(this).html(), function () {
+            // console.log(`You've selected ${$(this)}`)
+            $('button').hide();
+          })
+        })
+
+
+      })
+
+
+
+      // socket.emit ('cardselect', process.argv)
+      // socket.on('cardselect', function (arg) {
+
+      // })
+
 
       })
     </script>
