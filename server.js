@@ -53,6 +53,14 @@ app.get("/game", (req, res) => {
   res.render("game");
 });
 
+app.get("/archive", (req, res) => {
+  res.render("archive");
+});
+
+app.get("/leaderboard", (req, res) => {
+  res.render("leaderboard");
+});
+
 
 app.listen(PORT, () => {
   console.log("Example app listening on port " + PORT);
