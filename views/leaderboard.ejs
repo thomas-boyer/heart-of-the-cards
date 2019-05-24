@@ -17,32 +17,61 @@
     <title>Heart of the Cards | Gamecentre </title>
   </head>
   <body>
-    <nav class="navbar navbar-light">
-        <a class="navbar-brand" href="#">
-          <img src="/images/heart-of-cards-logo.png" class="hotc-logo" alt="">
-        </a>
-        <button class="float-right btn btn-warning">Notifications</button>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+          <a class="navbar-brand" href="/">
+            <img src="/images/heart-of-cards-logo.png" class="hotc-logo" alt="">
+          </a>
+          <ul class="nav-fill navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a href="/gamecentre" class="nav-link">Gamecentre</a>
+            </li>
+            <li class="nav-item">
+              <a href="/game" class="nav-link">Game</a>
+            </li>
+            <li class="nav-item">
+              <a href="/leaderboard" class="nav-link">Leaderboard</a>
+            </li>
+            <li class="nav-item">
+              <a href="/archive" class="nav-link">Archive</a>
+            </li>
+          </ul>
+          <button class="float-right btn btn-warning">Notifications</button>
+        </div>
       </nav>
     </header>
-    <main class="container-fluid game-centre">
+    <main class="container-fluid leaderboard">
       <article>
-        <div class="jumbotron jumbotron-fluid">
-          <div class="container">
-            <h1 class="display-4">Current Games</h1>
-            <p class="lead"><a href="">Game One</a> <a href="">Game Two</a> <a href="">Game Three</a></p>
-          </div>
-        </div>
-      </article>
-      <article class="row">
-        <div class="col">
-          <button type="button" href="archive.ejs" class="btn btn-primary btn-lg btn-block">Game Archive</button>
-        </div>
-        <div class="col">
-          <button type="button" href="game.ejs" class="btn btn-primary btn-lg btn-block">New Game</button>
-        </div>
-        <div class="col">
-          <button type="button" href="leaderboard.ejs" class="btn btn-primary btn-lg btn-block">Leaderboard</button>
-        </div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Username</th>
+              <th scope="col">Games Won</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td>Mark</td>
+              <td>Otto</td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>Jacob</td>
+              <td>Thornton</td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Larry the Bird</td>
+              <td>@twitter</td>
+            </tr>
+          </tbody>
+        </table>
       </article>
     </main>
     <!-- Optional JavaScript -->
