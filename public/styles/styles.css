@@ -1,6 +1,8 @@
 body {
   background-color: #0F633F;
   color: #041021;
+  font-family: 'Bitter', serif;
+  font-size: 16px;
 }
 
 main {
@@ -54,4 +56,70 @@ main.game-centre {
 
 .game-centre .jumbotron {
   border-radius: 15px 0;
+}
+
+/*card styling clubs*/
+.cc-r1 {
+  transform: translate(-48px, 57px);
+  z-index: 26;
+}
+
+.cc-r2 {
+  transform: translate(-38px, 57px);
+  z-index: 27;
+}
+
+.cc-r3 {
+  transform: translate(-28px, 57px);
+  z-index: 28;
+}
+
+.cc-r4 {
+  transform: translate(-28px, 57px);
+  z-index: 29;
+}
+
+.cc-r5 {
+  transform: translate(-18px, 57px);
+  z-index: 30;
+}
+
+.cc-r6 {
+  transform: translate(-8px, 57px);
+  cursor: move; z-index: 31;
+}
+
+.cc-r7 {
+  transform: translate(2px, 57px);
+  z-index: 32;
+}
+
+.cc-r8 {
+  transform: translate(12px, 57px);
+  z-index: 33;
+}
+
+.cc-r9 {
+  transform: translate(22px, 57px);
+  z-index: 34;
+}
+
+.cc-r10 {
+  transform: translate(32px, 57px);
+  z-index: 35;
+}
+
+.cc-r11 {
+  transform: translate(42px, 57px);
+  z-index: 36;
+}
+
+.cc-r12 {
+  transform: translate(52px, 57px);
+  z-index: 37;
+}
+
+.cc-r13 {
+  transform: translate(62px, 57px);
+  z-index: 72;
 }
