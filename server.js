@@ -57,31 +57,9 @@ app.get("/game", (req, res) => {
   res.render("game");
 });
 
-///////////////////////////////////////THOMAS'S WORK
-
 app.get("/archive", (req, res) => {
-
-
-  knex('games')
-    .join('game_players', 'games.id', '=', 'game_players.game_id')
-    .join('players', 'players.id', '=', 'game_players.player_id')
-    // .select('*')
-    .select('games.id', 'date_played', knex.raw('array_agg(players.id) AS players'), knex.raw('array_agg(game_players.player_score) AS scores'))
-    .groupBy('games.id')
-    .orderBy('date_played', 'desc')
-    .then(function(result)
-      {
-        console.log(result);
-      });
-
-//Game date, player1, player2, score1, score2
-
-
-  //let templateVars
   res.render("archive");
 });
-
-///////////////////////////////////////END OF THOMAS'S WORK
 
 app.get("/leaderboard", (req, res) => {
   res.render("leaderboard");
@@ -154,68 +132,73 @@ const prizeCards =
 let availableSuits = [0,1,2,3];
 
 let playerInfo = {}
-  // player 1{
+  // socket id : {}
+  //   designation: player1
   //   id : socket.id
-  //   suit:
+  //   state: 0
+  //   turn: true
+  //.  opId: //
   //   cardString:
   // }
 
 let connectCounter = 0;
+let p1id;
+let p2id;
 
 // Whenever a new socket connects
 io.on('connection', function(socket) {
    console.log(`User ${socket.id} has connected to the game.`);
-   let player1card;
-   let player2card;
 
    // Track number of players connected, assignment of player1/2 designations
-   connectCounter++;
-   if (connectCounter === 1) {
-    playerInfo.player1 = {
-      id: socket.id
-   }
-   } else if (connectCounter === 2) {
-    playerInfo.player2 = {
-      id: socket.id
-    }
-   }
-
+  connectCounter++;
+  if (connectCounter === 1) {
+    console.log('Are we in?')
+    socket.on('socketAssignment', function () {
+      p1id = socket.id
+      playerInfo[socket.id] = {
+        designation: 'player1',
+        id: socket.id,
+        state: 0
+      }
+    })
+    console.log('within the if statement', playerInfo)
+  } else if (connectCounter === 2) {
+    socket.on('socketAssignment', function () {
+      p2id = socket.id
+      playerInfo[socket.id] = {
+        designation: 'player2',
+        id: socket.id,
+        state: 0,
+        opId: playerInfo[p1id]['id']
+      }
+      playerInfo[p1id]['opId'] = playerInfo[p2id]['id'];
+    })
+    console.log('also within the if statement', playerInfo)
+  }
    //Whenever a socket disconnects
    socket.on('disconnect', function () {
       console.log(`User ${socket.id} has disconnected`);
       connectCounter--;
    });
-
-   // socket.on('message', function(value) {
-   //  if (player1card) {
-   //    player2card = value;
-   //  } else {
-   //    player1card = value;
-
-   //    if player1card > player2card {
-   //      console.log('1 wins')
-   //    } else {}
-   //  }
-   // })
+   console.log(connectCounter);
 
 // Ensuring two players are in game before defining player attributes
   if (connectCounter === 2) {
-
     // Set the suit of player 1
-    playerInfo.player1.suit = availableSuits[Math.floor(Math.random() * 4)];
-    if (playerInfo.player1.suit === availableSuits[availableSuits.length - 1])
+    playerInfo[p1id].suit = availableSuits[Math.floor(Math.random() * 4)];
+    if (playerInfo[p1id].suit === availableSuits[availableSuits.length - 1])
     {
       availableSuits.pop();
     }
-    else availableSuits.splice(availableSuits.indexOf(playerInfo.player1.suit), 1);
+    else availableSuits.splice(availableSuits.indexOf(playerInfo[p1id].suit), 1);
 
 
-    playerInfo.player2.suit = availableSuits[Math.floor(Math.random() * 3)];
-    if (playerInfo.player2.suit === availableSuits[availableSuits.length - 1])
+    playerInfo[p2id].suit = availableSuits[Math.floor(Math.random() * 3)];
+    if (playerInfo[p2id].suit === availableSuits[availableSuits.length - 1])
     {
       availableSuits.pop();
     }
-    else availableSuits.splice(availableSuits.indexOf(playerInfo.player2.suit), 1);
+    else availableSuits.splice(availableSuits.indexOf(playerInfo[p2id].suit), 1);
 
 
     let prizeSuit = availableSuits[Math.floor(Math.random() * 2)];
@@ -225,22 +208,10 @@ io.on('connection', function(socket) {
     }
     else availableSuits.splice(availableSuits.indexOf(prizeSuit), 1);
 
-    io.emit('welcome',
-    JSON.stringify({message : `Hi~! Welcome to the test Goofspiel game.
-      Player one's suit is ${suits[playerInfo.player1.suit]}.
-      Player two's suit is ${suits[playerInfo.player2.suit]}.
-      The prize suit is ${suits[prizeSuit]}.
-
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      `})
-    )
-
-    // let playerOneCardsString = '';
-    playerInfo.player1.cardString = '';
+    playerInfo[p1id].cardString = '';
     let playerOnePlayedCard;
 
-    // let playerTwoCardsString = '';
-    playerInfo.player2.cardString='';
+    playerInfo[p2id].cardString='';
     let playerTwoPlayedCard;
 
     let playerOneBet = 0;
@@ -251,31 +222,162 @@ io.on('connection', function(socket) {
 
     for (let card of playerOneCards)
     {
-      playerInfo.player1.cardString += Object.values(card) + ' ';
+      playerInfo[p1id].cardString += Object.values(card) + ' ';
     }
 
     for (let card of playerTwoCards)
     {
-      playerInfo.player2.cardString += Object.values(card) + ' ';
+      playerInfo[p2id].cardString += Object.values(card) + ' ';
     }
 
-    const question1 = () => {
-      return new Promise((resolve, reject) => {
+    // const main = async () => {
+    //   while (prizeCards.length > 0)
+    //   {
+    //     let prizeCard = prizeCards[Math.floor(Math.random() * prizeCards.length)];
+    //     if (prizeCard === prizeCards[prizeCards.length - 1])
+    //     {
+    //       prizeCards.pop();
+    //     }
+    //     else prizeCards.splice(prizeCards.indexOf(prizeCard), 1);
 
-        console.log('i am here')
-        console.log('socket is:', socket)
-        console.log('after socket')
-        socket.on('message', function (player1card) {
-          console.log('Am I here? My card is', player1card)
-          playerInfo.player1.cardString = playerInfo.player1.cardString.replace(player1card, '');
-          console.log(playerInfo.player1.cardString)
-          resolve();
+    //     io.emit('prizecard', `A prize card is flipped over.
+    //       It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}.`)
+
+    //     question1();
+    //     // await question1();
+    //     await question2();
+
+    //     if (playerOneBet > playerTwoBet)
+    //     {
+    //       playerOneScore += parseInt(calculateValue(Object.keys(prizeCard)[0]));
+    //     }
+    //     else if (playerOneBet < playerTwoBet)
+    //     {
+    //       playerTwoScore += parseInt(calculateValue(Object.keys(prizeCard)[0]));
+    //     }
+    //     console.log('Player one score:', playerOneScore);
+    //     console.log('Player two score:', playerTwoScore);
+    //   }
+
+    //   console.log(`Player ${playerOneScore > playerTwoScore ? 'One' : 'Two'} is the winner!`)
+
+    //   readline.close();
+    // }
+
+    const mainGame = function () {
+
+      let roundNumber = 1;
+      let roundScores = {
+        1 : {},
+        2 : {},
+        3 : {},
+        4 : {},
+        5 : {},
+        6 : {},
+        7 : {},
+        8 : {},
+        9 : {},
+        10 : {},
+        11 : {},
+        12 : {},
+        13 : {}
+      };
+      /*
+      roundScores = {
+        1 : { player1: 9
+              player2 : 5
+            }
+      }
+      */
+
+      io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game.
+        Player one's suit is ${suits[playerInfo[p1id].suit]}.
+        Player two's suit is ${suits[playerInfo[p2id].suit]}.
+        The prize suit is ${suits[prizeSuit]}.
+        Game is starting now.
+
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`)
+      )
+
+      while (prizeCards.length > 0)
+      {
+        let prizeCard = prizeCards[Math.floor(Math.random() * prizeCards.length)];
+        if (prizeCard === prizeCards[prizeCards.length - 1])
+        {
+          prizeCards.pop();
+        }
+        else prizeCards.splice(prizeCards.indexOf(prizeCard), 1);
+
+        console.log('Remaining prize cards: ', prizeCards.length)
+
+        io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over.
+          It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}.
+          Please select a card.`);
+
+        let finishedMoves = 0;
+
+        socket.on('cardChoice', (cardValue) => {
+          // for loop to assign a player score
+          for (let player in playerInfo) {
+            if (player === socket.id) {
+              roundScores[roundNumber][playerInfo[socket.id][designation]] = cardValue
+            }
+          }
+          finishedMoves++;
         })
+          // if statement to check if both scores are present
+        // return new promise
+        //   if (roundScores[roundNumber]['player1']) && (roundScores[roundNumber]['player2']) {
+        //     resolve
+        //   })
 
-        io.to(`${playerInfo.player1.id}`).emit(
-          'player1turn',
-          `Player One: Please play an available card. Available cards: ${playerInfo.player1.cardString}`,
-        )
+        async function waitForMoves() {
+          return new Promise((res, rej) => {
+            if (finishedMoves === 2) {
+              finishedMoves = 0;
+              console.log("Done");
+              resolve();
+            }
+          });
+        }
+
+        waitForMoves();
+            // Compare numbers to find winner.
+
+            // Create players' cumulative scores
+
+            // Output the winner using an emit
+
+            // Update the round number
+
+            // Don't allow the while loop to
+
+
+
+      // socket.on('message', function (e) {
+      //   console.log('CardPlayed: ', e.cardPlayed);
+      //
+      //   console.log(socket.id, playerInfo)
+      // })
+
+      } // This closes the prize cards counter
+    } // This closes the main game function
+
+    // const question1 = () => {
+    //   // return new Promise((resolve, reject) => {
+    //     console.log('Running question 1.')
+    //     io.to(`${playerInfo.player1.id}`).emit(
+    //       'player1turn',
+    //       `Player One: Please play an available card. Available cards: ${playerInfo.player1.cardString}`,
+    //     )
+
+    //     socket.on('message', function (player1card) {
+    //       console.log('Am I here? My card is', player1card)
+    //       playerInfo.player1.cardString = playerInfo.player1.cardString.replace(player1card, '');
+    //       console.log(playerInfo.player1.cardString)
+    //       resolve();
+    //     })
+
 
 
         // console.log('okokok');
@@ -297,77 +399,47 @@ io.on('connection', function(socket) {
 
 
 
-      })
-    }
+      // })
+    // }
     // console.log('okokokokok')
-    const question2 = () => {
-      return new Promise((resolve, reject) => {
-        console.log('i am in question 2 now')
-        readline.question(`Player Two: Please play an available card.
-          Available cards: ${playerTwoCardsString}
+    // const question2 = () => {
+    //   return new Promise((resolve, reject) => {
+    //     console.log('Running question 2.')
+    //     readline.question(`Player Two: Please play an available card.
+    //       Available cards: ${playerTwoCardsString}
 
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-          `, (answer) => {
-            console.log(`You played the ${answer} of ${suits[playerTwoSuit]}.`)
+    //       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //       `, (answer) => {
+    //         console.log(`You played the ${answer} of ${suits[playerTwoSuit]}.`)
 
-            let answerIndex = calculateValue(answer);
+    //         let answerIndex = calculateValue(answer);
 
-            playerTwoBet = parseInt(answerIndex);
+    //         playerTwoBet = parseInt(answerIndex);
 
-            playerTwoPlayedCard = playerTwoCards.find((element) => {return Object.keys(element)[0] === answerIndex});
+    //         playerTwoPlayedCard = playerTwoCards.find((element) => {return Object.keys(element)[0] === answerIndex});
 
-            playerTwoCards.splice(playerTwoCards.indexOf(playerTwoPlayedCard), 1);
+    //         playerTwoCards.splice(playerTwoCards.indexOf(playerTwoPlayedCard), 1);
 
-            playerTwoCardsString = '';
+    //         playerTwoCardsString = '';
 
-            for (card of playerTwoCards)
-            {
-              playerTwoCardsString += Object.values(card) + ' ';
-            }
-
-
-            resolve();
-        });
-
-      })
-    }
-
-    const main = async () => {
-      while (prizeCards.length > 0)
-      {
-        let prizeCard = prizeCards[Math.floor(Math.random() * prizeCards.length)];
-        if (prizeCard === prizeCards[prizeCards.length - 1])
-        {
-          prizeCards.pop();
-        }
-        else prizeCards.splice(prizeCards.indexOf(prizeCard), 1);
-
-        io.emit('prizecard', `A prize card is flipped over.
-          It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}.`)
+    //         for (card of playerTwoCards)
+    //         {
+    //           playerTwoCardsString += Object.values(card) + ' ';
+    //         }
 
 
-        await question1();
-        await question2();
+    //         resolve();
+    //     });
 
-        if (playerOneBet > playerTwoBet)
-        {
-          playerOneScore += parseInt(calculateValue(Object.keys(prizeCard)[0]));
-        }
-        else if (playerOneBet < playerTwoBet)
-        {
-          playerTwoScore += parseInt(calculateValue(Object.keys(prizeCard)[0]));
-        }
-        console.log('Player one score:', playerOneScore);
-        console.log('Player two score:', playerTwoScore);
-      }
+    //   })
+    // }
 
-      console.log(`Player ${playerOneScore > playerTwoScore ? 'One' : 'Two'} is the winner!`)
+  // main();
+  mainGame();
+  } // This is closing the if statement
 
-      readline.close();
-    }
-  main();
-}
-});
+
+}); // This is closing the socket connection
 
 server.listen(PORT, () => {
   console.log('Server is live on PORT:' + PORT);

@@ -120,27 +120,38 @@
     <script>
       // Identify the IP address and PORT that a socket will connect to.
       const socket = io.connect('localhost:8080');
-      socket.send('test123')
-
-      socket.on('welcome', function (message) {
-        console.log(JSON.parse(message)['message']);
-      });
-
-      socket.on('prizecard', function (message) {
-        console.log(message)
+      socket.on('connect', function () {
+        socket.emit('socketAssignment')
       })
 
+      socket.on('welcome', function (message) {
+        console.log(JSON.parse(message));
+      });
+
+      socket.on('pleaseChoose', function (message) {
+        console.log(message)
+        $('.card').click(function (event) {
+          event.preventDefault()
+          socket.send('cardChoice', $(this).data('value'))
+          $(this).hide();
+          $('.card').off('click');
+          console.log('Thank you. Please wait for your opponent to select a card.')
+        })
+      })
+
+/*
       socket.on('player1turn', function (message) {
         console.log(message)
         $('.card').click(function (event) {
-          event.preventDefault();
+          event.preventDefault()
           console.log('Click detected. The card picked is a', $(this).data('value'))
           $(this).hide();
-          socket.send($(this).data('value'),function () {
-            console.log('Success!')
-          })
+          socket.send($(this).data('value'))
         })
       })
+*/
+
+
 
 
 
