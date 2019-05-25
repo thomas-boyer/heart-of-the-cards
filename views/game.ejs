@@ -120,6 +120,7 @@
     <script>
       // Identify the IP address and PORT that a socket will connect to.
       const socket = io.connect('localhost:8080');
+
       socket.on('connect', function () {
         socket.emit('socketAssignment')
       })

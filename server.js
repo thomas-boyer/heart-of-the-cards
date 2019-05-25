@@ -147,7 +147,7 @@ let p2id;
 
 // Whenever a new socket connects
 io.on('connection', function(socket) {
-   console.log(`User ${socket.id} has connected to the game.`);
+  console.log(`User ${socket.id} has connected to the game.`);
 
    // Track number of players connected, assignment of player1/2 designations
   connectCounter++;
@@ -330,7 +330,7 @@ io.on('connection', function(socket) {
         //   if (roundScores[roundNumber]['player1']) && (roundScores[roundNumber]['player2']) {
         //     resolve
         //   })
-
+        /*
         async function waitForMoves() {
           return new Promise((res, rej) => {
             if (finishedMoves === 2) {
@@ -352,7 +352,7 @@ io.on('connection', function(socket) {
 
             // Don't allow the while loop to
 
-
+        */
 
       // socket.on('message', function (e) {
       //   console.log('CardPlayed: ', e.cardPlayed);
