@@ -57,21 +57,14 @@
             </tr>
           </thead>
           <tbody>
+            <% var i = 1;%>
+            <% for (var player of players) {%>
             <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
+              <th scope="row"><%= i++ %></th>
+              <td><%= player.id %></td>
+              <td><%= player.games_won %></td>
             </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Larry the Bird</td>
-              <td>@twitter</td>
-            </tr>
+            <% }; %>
           </tbody>
         </table>
       </article>

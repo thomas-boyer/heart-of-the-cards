@@ -17,6 +17,9 @@ const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
 
+const cookieSession = require('cookie-session');
+app.use(cookieSession({ name: 'session', keys: ['key1', 'key2'] }));
+
 // Seperated Routes for each Resource
 const usersRoutes = require("./routes/users");
 
@@ -44,11 +47,6 @@ app.use(express.static("./node_modules"))
 // Mount all resource routes
 app.use("/api/users", usersRoutes(knex));
 
-// Home page
-app.get("/", (req, res) => {
-  res.render("index");
-});
-
 app.get("/gamecentre", (req, res) => {
   res.render("gamecentre");
 });
@@ -57,12 +55,63 @@ app.get("/game", (req, res) => {
   res.render("game");
 });
 
-app.get("/archive", (req, res) => {
-  res.render("archive");
+app.post("/login", (req, res) => {
+  req.session.id = req.body.id;
+
+  knex('players')
+    .select('id').where('id', req.body.id)
+    .then( (result) =>
+      {
+        if (!result.length)
+        {
+          return knex('players').insert({ id: req.body.id, games_won: 0 });
+        }
+      })
+  res.redirect("/gamecentre");
 });
 
+app.get("/login", (req, res) => {
+
+  if (req.session.id) res.redirect("/gamecentre");
+  res.render("index");
+});
+
+///////////////////////////////////////THOMAS'S WORK
+
+app.get("/archive", (req, res) => {
+  knex('games')
+    .join('game_players', 'games.id', '=', 'game_players.game_id')
+    .join('players', 'players.id', '=', 'game_players.player_id')
+    // .select('*')
+    .select('games.id', 'date_played', knex.raw('array_agg(players.id) AS players'), knex.raw('array_agg(game_players.player_score) AS scores'))
+    .groupBy('games.id')
+    .orderBy('date_played', 'desc')
+    .then(function(result)
+      {
+        const templateVars = {games: result};
+        res.render("archive", templateVars);
+      });
+});
+
+///////////////////////////////////////END OF THOMAS'S WORK
+
 app.get("/leaderboard", (req, res) => {
-  res.render("leaderboard");
+
+  knex('players')
+  .select('*')
+  .orderBy('games_won', 'desc')
+  .then(function(result)
+    {
+      const templateVars = {players: result};
+      res.render("leaderboard", templateVars);
+    });
+});
+
+// Home page
+app.get("/", (req, res) => {
+
+  if (req.session.id) res.redirect("/gamecentre");
+  else res.redirect("/login");
 });
 
 // Socket set-up
