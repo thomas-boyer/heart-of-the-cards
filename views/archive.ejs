@@ -49,41 +49,25 @@
     <main class="container-fluid leaderboard">
       <article style="padding-top: 1em;">
         <div class="row">
+          <%for (let game of games) { %>
           <div class="col-sm">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Game Date</h5>
+                <h5 class="card-title"><%= game.date_played.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric'}) %></h5>
                 <table class="table">
                   <tr class="col">
-                    <td>Player 1</td>
-                    <td>Player 2</td>
+                    <td><%= game.players[0] %></td>
+                    <td><%= game.players[1] %></td>
                   </tr>
                   <tr class="col">
-                    <td>Score 1</td>
-                    <td>Score 2</td>
+                    <td><%= game.scores[0] %></td>
+                    <td><%= game.scores[1] %></td>
                   </tr>
                 </table>
               </div>
             </div>
           </div>
-          <div class="col-sm">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text"><%= games %></p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-              </div>
-            </div>
-          </div>
+          <% } %>
         </div>
       </article>
     </main>
