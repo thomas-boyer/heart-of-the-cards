@@ -123,3 +123,20 @@ main.game-centre {
   transform: translate(62px, 57px);
   z-index: 72;
 }
+
+.leaderboard article {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  flex: 1 1 auto;
+}
+
+.leaderboard article .card {
+  max-width: 350px;
+  max-height: 175px;
+  margin: 10px;
+  text-align: center;
+}
+
+
+

@@ -39,7 +39,7 @@
               <a href="/leaderboard" class="nav-link">Leaderboard</a>
             </li>
             <li class="nav-item">
-              <a href="/archive active" class="nav-link">Archive</a>
+              <a href="/archive" class="nav-link">Archive</a>
             </li>
           </ul>
           <button class="float-right btn btn-warning">Notifications</button>
@@ -48,27 +48,23 @@
     </header>
     <main class="container-fluid leaderboard">
       <article style="padding-top: 1em;">
-        <div class="row">
-          <%for (var game of games) { %>
-          <div class="col-sm">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title"><%= game.date_played.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric'}) %></h5>
-                <table class="table">
-                  <tr class="col">
-                    <td><%= game.players[0] %></td>
-                    <td><%= game.players[1] %></td>
-                  </tr>
-                  <tr class="col">
-                    <td><%= game.scores[0] %></td>
-                    <td><%= game.scores[1] %></td>
-                  </tr>
-                </table>
-              </div>
-            </div>
+      <%for (var game of games) { %>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%= game.date_played.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric'}) %></h5>
+            <table class="table">
+              <tr class="col">
+                <td><%= game.players[0] %></td>
+                <td><%= game.players[1] %></td>
+              </tr>
+              <tr class="col">
+                <td><%= game.scores[0] %></td>
+                <td><%= game.scores[1] %></td>
+              </tr>
+            </table>
           </div>
-          <% } %>
         </div>
+      <% } %>
       </article>
     </main>
     <!-- Optional JavaScript -->
