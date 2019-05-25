@@ -1,23 +1,23 @@
 exports.seed = function(knex, Promise) {
   return knex('game_players').del()
-    .then(knex('games').del())
-    .then(knex('players').del())
+    .then(() => { return knex('games').del() })
+    .then(() => { return knex('players').del() })
     .then(() => {
 
       return Promise.all([
         //players
-        knex('players').insert({id: 'sawyerthecorgi'}),
-        knex('players').insert({id: 'moviesnob94'}),
-        knex('players').insert({id: 'loopylighthouse'}),
-        knex('players').insert({id: 'kplusl'}),
-        knex('players').insert({id: 'shades'}),
-        knex('players').insert({id: 'playtone'}),
-        knex('players').insert({id: 'ponyo'}),
-        knex('players').insert({id: 'souske'}),
-        knex('players').insert({id: 'ben-quadinaros'}),
-        knex('players').insert({id: 'sebulba'}),
-        knex('players').insert({id: 'sleepyguy94'}),
-        knex('players').insert({id: 'goku'}),
+        knex('players').insert({id: 'sawyerthecorgi', games_won: 25}),
+        knex('players').insert({id: 'moviesnob94', games_won: 2}),
+        knex('players').insert({id: 'loopylighthouse', games_won: 13}),
+        knex('players').insert({id: 'kplusl', games_won: 36}),
+        knex('players').insert({id: 'shades', games_won: 10}),
+        knex('players').insert({id: 'playtone', games_won: 13}),
+        knex('players').insert({id: 'ponyo', games_won: 62}),
+        knex('players').insert({id: 'souske', games_won: 21}),
+        knex('players').insert({id: 'ben-quadinaros', games_won: 0}),
+        knex('players').insert({id: 'sebulba', games_won: 9}),
+        knex('players').insert({id: 'sleepyguy94', games_won: 33}),
+        knex('players').insert({id: 'goku', games_won: 1}),
         //games
         knex('games').insert({id: 0, date_played: new Date('May 1, 2019 12:00:00'), prize_suit: 0, prize_deck: null}),
         knex('games').insert({id: 1, date_played: new Date('May 2, 2019 12:00:00'), prize_suit: 0, prize_deck: null}),
