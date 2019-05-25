@@ -106,7 +106,8 @@
 
     <script>
       // Identify the IP address and PORT that a socket will connect to.
-      const socket = io.connect('http://172.46.2.110:8080');
+      const socket = io.connect('localhost:8080');
+      socket.send('test123')
 
       socket.on('welcome', function (message) {
         console.log(JSON.parse(message)['message']);
@@ -118,14 +119,13 @@
 
       socket.on('player1turn', function (message) {
         console.log(message)
-
         $('.card').click(function (event) {
           event.preventDefault();
           console.log('Click detected. The card picked is a', $(this).data('value'))
-          socket.emit('cardpick', $(this).data('value'), function () {
+          $(this).hide();
+          socket.send($(this).data('value'),function () {
             console.log('Success!')
           })
-          $(this).hide();
         })
       })
 

@@ -143,6 +143,8 @@ let connectCounter = 0;
 // Whenever a new socket connects
 io.on('connection', function(socket) {
    console.log(`User ${socket.id} has connected to the game.`);
+   let player1card;
+   let player2card;
 
    // Track number of players connected, assignment of player1/2 designations
    connectCounter++;
@@ -161,6 +163,18 @@ io.on('connection', function(socket) {
       console.log(`User ${socket.id} has disconnected`);
       connectCounter--;
    });
+
+   // socket.on('message', function(value) {
+   //  if (player1card) {
+   //    player2card = value;
+   //  } else {
+   //    player1card = value;
+
+   //    if player1card > player2card {
+   //      console.log('1 wins')
+   //    } else {}
+   //  }
+   // })
 
 // Ensuring two players are in game before defining player attributes
   if (connectCounter === 2) {
@@ -226,17 +240,21 @@ io.on('connection', function(socket) {
     const question1 = () => {
       return new Promise((resolve, reject) => {
 
+        console.log('i am here')
+        console.log('socket is:', socket)
+        console.log('after socket')
+        socket.on('message', function (player1card) {
+          console.log('Am I here? My card is', player1card)
+          playerInfo.player1.cardString = playerInfo.player1.cardString.replace(player1card, '');
+          console.log(playerInfo.player1.cardString)
+          resolve();
+        })
+
         io.to(`${playerInfo.player1.id}`).emit(
           'player1turn',
           `Player One: Please play an available card. Available cards: ${playerInfo.player1.cardString}`,
         )
 
-        socket.on('cardpick', function (player1card) {
-          console.log('Am I here?')
-          playerInfo.player1.cardString = playerInfo.player1.cardString.replace(player1card, '');
-          console.log(playerInfo.player1.cardString)
-          resolve();
-        })
 
         // console.log('okokok');
 
@@ -262,6 +280,7 @@ io.on('connection', function(socket) {
     // console.log('okokokokok')
     const question2 = () => {
       return new Promise((resolve, reject) => {
+        console.log('i am in question 2 now')
         readline.question(`Player Two: Please play an available card.
           Available cards: ${playerTwoCardsString}
 
@@ -304,6 +323,7 @@ io.on('connection', function(socket) {
         io.emit('prizecard', `A prize card is flipped over.
           It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}.`)
 
+
         await question1();
         await question2();
 
@@ -323,8 +343,8 @@ io.on('connection', function(socket) {
 
       readline.close();
     }
-    main();
-  }
+  main();
+}
 });
 
 server.listen(PORT, () => {
