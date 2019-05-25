@@ -51,6 +51,42 @@ app.get("/gamecentre", (req, res) => {
   res.render("gamecentre");
 });
 
+app.post("/game/cardplayed", (req, res) => {
+
+  knex('game_players')
+    .select('id').where('id', req.body.id)
+    .then( (result) =>
+      {
+        if (!result.length)
+        {
+          return knex('players').insert({ id: req.body.id, games_won: 0 });
+        }
+      });
+  res.end();
+});
+
+app.post("/game/start", (req, res) => {
+
+  function findMax(callback)
+  {
+    knex('games').max('id').then( (result) => { callback(result) } );
+  }
+
+  console.log(findMax( (result) => { return result } ));
+
+
+  console.log(max);
+
+  // knex('games')
+  //   //Determine the prize suit and prize deck order in front-end, and send that through request body
+  //   .insert({ id: gameID, date_played: new Date(), prize_suit: req.body.prize_suit, prize_deck: req.body.prize_deck })
+  //   .then( (result) =>
+  //     {
+  //       return console.log(result);
+  //     });
+  // res.end();
+});
+
 app.get("/game", (req, res) => {
   res.render("game");
 });
@@ -66,7 +102,7 @@ app.post("/login", (req, res) => {
         {
           return knex('players').insert({ id: req.body.id, games_won: 0 });
         }
-      })
+      });
   res.redirect("/gamecentre");
 });
 
