@@ -57,9 +57,31 @@ app.get("/game", (req, res) => {
   res.render("game");
 });
 
+///////////////////////////////////////THOMAS'S WORK
+
 app.get("/archive", (req, res) => {
+
+
+  knex('games')
+    .join('game_players', 'games.id', '=', 'game_players.game_id')
+    .join('players', 'players.id', '=', 'game_players.player_id')
+    // .select('*')
+    .select('games.id', 'date_played', knex.raw('array_agg(players.id) AS players'), knex.raw('array_agg(game_players.player_score) AS scores'))
+    .groupBy('games.id')
+    .orderBy('date_played', 'desc')
+    .then(function(result)
+      {
+        console.log(result);
+      });
+
+//Game date, player1, player2, score1, score2
+
+
+  //let templateVars
   res.render("archive");
 });
+
+///////////////////////////////////////END OF THOMAS'S WORK
 
 app.get("/leaderboard", (req, res) => {
   res.render("leaderboard");
