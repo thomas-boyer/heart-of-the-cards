@@ -1,142 +1,114 @@
 body {
   background-color: #0F633F;
   color: #041021;
-  font-family: 'Bitter', serif;
+  font-family: "Bitter", serif;
   font-size: 16px;
 }
-
-main {
-  padding: 0 1em 0 1em;
-}
-
-/*navigation styling*/
-
-nav {
+body nav {
   background-color: #EEF2F4;
-  -webkit-box-shadow: 0px 3px 4px -2px rgba(0,0,0,0.75);
-  -moz-box-shadow: 0px 3px 4px -2px rgba(0,0,0,0.75);
-  box-shadow: 0px 3px 4px -2px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 0px 3px 4px -2px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 3px 4px -2px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 3px 4px -2px rgba(0, 0, 0, 0.75);
 }
-
-.hotc-logo {
+body nav .hotc-logo {
   max-width: 100px;
   width: 100%;
   padding-left: 1em;
 }
-
-/*index.html styling*/
-
-article.hp-logo-container {
+body main {
+  padding: 0 1em 0 1em;
+}
+body main.login .hp-logo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 2em;
 }
-
-.hp-logo {
+body main.login .hp-logo {
   max-width: 250px;
   width: 100%;
 }
-
-.coh-home .card {
+body main.login .coh-home .card {
   background-color: #EEF2F4;
   border-radius: 15px 0;
   border-radius: none;
   width: 70%;
   margin: 0 auto;
   padding: 1.5em;
-
 }
-
-/*gamecentre.html styling*/
-
-main.game-centre {
- margin-top: 8em;
+body main.game-centre {
+  margin-top: 8em;
 }
-
-.game-centre .jumbotron {
+body main.game-centre .jumbotron {
   border-radius: 15px 0;
 }
-
-/*card styling clubs*/
-.cc-r1 {
+body main.game .cc-r1 {
   transform: translate(-58px, 57px);
   z-index: 26;
 }
-
-.cc-r2 {
+body main.game .cc-r2 {
   transform: translate(-48px, 57px);
   z-index: 27;
 }
-
-.cc-r3 {
+body main.game .cc-r3 {
   transform: translate(-38px, 57px);
   z-index: 28;
 }
-
-.cc-r4 {
+body main.game .cc-r4 {
   transform: translate(-28px, 57px);
   z-index: 29;
 }
-
-.cc-r5 {
+body main.game .cc-r5 {
   transform: translate(-18px, 57px);
   z-index: 30;
 }
-
-.cc-r6 {
+body main.game .cc-r6 {
   transform: translate(-8px, 57px);
-  cursor: move; z-index: 31;
+  cursor: move;
+  z-index: 31;
 }
-
-.cc-r7 {
+body main.game .cc-r7 {
   transform: translate(2px, 57px);
   z-index: 32;
 }
-
-.cc-r8 {
+body main.game .cc-r8 {
   transform: translate(12px, 57px);
   z-index: 33;
 }
-
-.cc-r9 {
+body main.game .cc-r9 {
   transform: translate(22px, 57px);
   z-index: 34;
 }
-
-.cc-r10 {
+body main.game .cc-r10 {
   transform: translate(32px, 57px);
   z-index: 35;
 }
-
-.cc-r11 {
+body main.game .cc-r11 {
   transform: translate(42px, 57px);
   z-index: 36;
 }
-
-.cc-r12 {
+body main.game .cc-r12 {
   transform: translate(52px, 57px);
   z-index: 37;
 }
-
-.cc-r13 {
+body main.game .cc-r13 {
   transform: translate(62px, 57px);
   z-index: 72;
 }
-
-.leaderboard article {
+body main.leaderboard {
+  background: white;
+}
+body main.archive article {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
   flex: 1 1 auto;
 }
-
-.leaderboard article .card {
-  max-width: 350px;
+body main.archive article .card {
+  width: 350px;
   max-height: 175px;
   margin: 10px;
   text-align: center;
 }
 
-
-
+/*# sourceMappingURL=styles.css.map */

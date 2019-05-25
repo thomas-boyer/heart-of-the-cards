@@ -1,0 +1,137 @@
+body {
+  background-color: #0F633F;
+  color: #041021;
+  font-family: 'Bitter', serif;
+  font-size: 16px;
+
+  nav {
+    background-color: #EEF2F4;
+    -webkit-box-shadow: 0px 3px 4px -2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 3px 4px -2px rgba(0,0,0,0.75);
+    box-shadow: 0px 3px 4px -2px rgba(0,0,0,0.75);
+
+    .hotc-logo {
+      max-width: 100px;
+      width: 100%;
+      padding-left: 1em;
+    }
+  }
+
+  main {
+    padding: 0 1em 0 1em;
+
+    &.login {
+
+      .hp-logo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 2em;
+      }
+
+      .hp-logo {
+        max-width: 250px;
+        width: 100%;
+      }
+
+      .coh-home {
+
+        .card {
+          background-color: #EEF2F4;
+          border-radius: 15px 0;
+          border-radius: none;
+          width: 70%;
+          margin: 0 auto;
+          padding: 1.5em;
+        }
+      }
+    }
+
+    &.game-centre {
+      margin-top: 8em;
+
+      .jumbotron {
+        border-radius: 15px 0;
+      }
+    }
+
+    &.game {
+
+      .cc-r1 {
+        transform: translate(-58px, 57px);
+        z-index: 26;
+      }
+      .cc-r2 {
+        transform: translate(-48px, 57px);
+        z-index: 27;
+      }
+      .cc-r3 {
+        transform: translate(-38px, 57px);
+        z-index: 28;
+      }
+      .cc-r4 {
+        transform: translate(-28px, 57px);
+        z-index: 29;
+      }
+      .cc-r5 {
+        transform: translate(-18px, 57px);
+        z-index: 30;
+      }
+      .cc-r6 {
+        transform: translate(-8px, 57px);
+        cursor: move;
+        z-index: 31;
+      }
+      .cc-r7 {
+        transform: translate(2px, 57px);
+        z-index: 32;
+      }
+      .cc-r8 {
+        transform: translate(12px, 57px);
+        z-index: 33;
+      }
+      .cc-r9 {
+        transform: translate(22px, 57px);
+        z-index: 34;
+      }
+      .cc-r10 {
+        transform: translate(32px, 57px);
+        z-index: 35;
+      }
+      .cc-r11 {
+        transform: translate(42px, 57px);
+        z-index: 36;
+      }
+      .cc-r12 {
+        transform: translate(52px, 57px);
+        z-index: 37;
+      }
+      .cc-r13 {
+        transform: translate(62px, 57px);
+        z-index: 72;
+      }
+
+    }
+
+    &.leaderboard {
+      background: white;
+    }
+
+    &.archive {
+
+      article {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        flex: 1 1 auto;
+
+        .card {
+          width: 350px;
+          max-height: 175px;
+          margin: 10px;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
