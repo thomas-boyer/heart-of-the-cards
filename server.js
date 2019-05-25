@@ -129,27 +129,6 @@ const prizeCards =
   {13: 'king'}
 ]
 
-function calculateValue(card)
-{
-  if (card === 'ace')
-  {
-    return '1';
-  }
-  else if (card === 'jack')
-  {
-    return '11';
-  }
-  else if (card === 'queen')
-  {
-    return '12';
-  }
-  else if (card === 'king')
-  {
-    return '13';
-  }
-  else return card;
-}
-
 let availableSuits = [0,1,2,3];
 
 let playerInfo = {}
@@ -244,36 +223,43 @@ io.on('connection', function(socket) {
       playerInfo.player2.cardString += Object.values(card) + ' ';
     }
 
-
     const question1 = () => {
       return new Promise((resolve, reject) => {
-        console.log(playerInfo.player1.id);
-        io.to(`${playerInfo.player1.id}`).emit('player1turn', `Player One: Please play an available card. Available cards: ${playerInfo.player1.cardString}`)
+
+        io.to(`${playerInfo.player1.id}`).emit(
+          'player1turn',
+          `Player One: Please play an available card. Available cards: ${playerInfo.player1.cardString}`,
+        )
+
+        socket.on('cardpick', function (player1card) {
+          console.log('Am I here?')
+          playerInfo.player1.cardString = playerInfo.player1.cardString.replace(player1card, '');
+          console.log(playerInfo.player1.cardString)
+          resolve();
+        })
+
+        // console.log('okokok');
 
 
-        // console.log(You played the ${answer} of ${suits[playerInfo.player1.suit}.)
 
-        let answerIndex = calculateValue(answer);
+        // playerOneBet = parseInt(answerIndex);
 
-        playerOneBet = parseInt(answerIndex);
+        // playerOnePlayedCard = playerOneCards.find((element) => {return Object.keys(element)[0] === answerIndex});
 
-        playerOnePlayedCard = playerOneCards.find((element) => {return Object.keys(element)[0] === answerIndex});
+        // playerOneCards.splice(playerOneCards.indexOf(playerOnePlayedCard), 1);
 
-        playerOneCards.splice(playerOneCards.indexOf(playerOnePlayedCard), 1);
+        // playerOneCardsString = '';
 
-        playerOneCardsString = '';
-
-        for (card of playerOneCards)
-        {
-          playerOneCardsString += Object.values(card) + ' ';
-        }
+        // for (card of playerOneCards)
+        // {
+          // playerOneCardsString += Object.values(card) + ' ';
+        // }
 
 
-        resolve();
 
       })
     }
-
+    // console.log('okokokokok')
     const question2 = () => {
       return new Promise((resolve, reject) => {
         readline.question(`Player Two: Please play an available card.
@@ -304,7 +290,7 @@ io.on('connection', function(socket) {
 
       })
     }
-    console.log("It gets to here.")
+
     const main = async () => {
       while (prizeCards.length > 0)
       {
@@ -315,11 +301,8 @@ io.on('connection', function(socket) {
         }
         else prizeCards.splice(prizeCards.indexOf(prizeCard), 1);
 
-        console.log(`A prize card is flipped over.
-          It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}.
-
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-          `);
+        io.emit('prizecard', `A prize card is flipped over.
+          It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}.`)
 
         await question1();
         await question2();

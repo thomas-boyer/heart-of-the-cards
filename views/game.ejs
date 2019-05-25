@@ -112,18 +112,21 @@
         console.log(JSON.parse(message)['message']);
       });
 
+      socket.on('prizecard', function (message) {
+        console.log(message)
+      })
+
       socket.on('player1turn', function (message) {
         console.log(message)
 
         $('.card').click(function (event) {
           event.preventDefault();
-          socket.emit('card-pick', $(this).html(), function () {
-            // console.log(`You've selected ${$(this)}`)
-            $('button').hide();
+          console.log('Click detected. The card picked is a', $(this).data('value'))
+          socket.emit('cardpick', $(this).data('value'), function () {
+            console.log('Success!')
           })
+          $(this).hide();
         })
-
-
       })
 
 
@@ -133,8 +136,6 @@
 
       // })
 
-
-      })
     </script>
   </body>
 </html>
