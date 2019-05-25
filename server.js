@@ -60,8 +60,6 @@ app.get("/game", (req, res) => {
 ///////////////////////////////////////THOMAS'S WORK
 
 app.get("/archive", (req, res) => {
-
-
   knex('games')
     .join('game_players', 'games.id', '=', 'game_players.game_id')
     .join('players', 'players.id', '=', 'game_players.player_id')
@@ -71,20 +69,23 @@ app.get("/archive", (req, res) => {
     .orderBy('date_played', 'desc')
     .then(function(result)
       {
-        console.log(result);
+        const templateVars = {games: result};
+        res.render("archive", templateVars);
       });
-
-//Game date, player1, player2, score1, score2
-
-
-  //let templateVars
-  res.render("archive");
 });
 
 ///////////////////////////////////////END OF THOMAS'S WORK
 
 app.get("/leaderboard", (req, res) => {
-  res.render("leaderboard");
+
+  knex('players')
+  .select('*')
+  .orderBy('games_won', 'desc')
+  .then(function(result)
+    {
+      const templateVars = {players: result};
+      res.render("leaderboard", templateVars);
+    });
 });
 
 // Socket set-up
