@@ -60,17 +60,17 @@ main.game-centre {
 
 /*card styling clubs*/
 .cc-r1 {
-  transform: translate(-48px, 57px);
+  transform: translate(-58px, 57px);
   z-index: 26;
 }
 
 .cc-r2 {
-  transform: translate(-38px, 57px);
+  transform: translate(-48px, 57px);
   z-index: 27;
 }
 
 .cc-r3 {
-  transform: translate(-28px, 57px);
+  transform: translate(-38px, 57px);
   z-index: 28;
 }
 
