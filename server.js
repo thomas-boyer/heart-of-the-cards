@@ -48,7 +48,9 @@ app.use(express.static("./node_modules"))
 app.use("/api/users", usersRoutes(knex));
 
 app.get("/gamecentre", (req, res) => {
-  res.render("gamecentre");
+  res.render("gamecentre", {
+    page_name: 'gamecentre'
+  });
 });
 
 app.post("/game/cardplayed", async (req, res) => {
@@ -116,7 +118,9 @@ app.post("/game/start", async (req, res) => {
 });
 
 app.get("/game", (req, res) => {
-  res.render("game");
+  res.render("game", {
+    page_name: 'game'
+  });
 });
 
 app.post("/login", (req, res) => {
@@ -152,7 +156,7 @@ app.get("/archive", (req, res) => {
     .orderBy('date_played', 'desc')
     .then(function(result)
       {
-        const templateVars = {games: result};
+        const templateVars = {games: result, page_name: "archive"};
         res.render("archive", templateVars);
       });
 });
@@ -166,7 +170,7 @@ app.get("/leaderboard", (req, res) => {
   .orderBy('games_won', 'desc')
   .then(function(result)
     {
-      const templateVars = {players: result};
+      const templateVars = {players: result, page_name: "leaderboard"};
       res.render("leaderboard", templateVars);
     });
 });
