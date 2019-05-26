@@ -128,10 +128,8 @@ app.get("/archive", (req, res) => {
     .orderBy('date_played', 'desc')
     .then(function(result)
       {
-        const templateVars = {games: result};
-        res.render("archive", templateVars, {
-          page_name: 'archive'
-        });
+        const templateVars = {games: result, page_name: "archive"};
+        res.render("archive", templateVars);
       });
 });
 
@@ -144,10 +142,8 @@ app.get("/leaderboard", (req, res) => {
   .orderBy('games_won', 'desc')
   .then(function(result)
     {
-      const templateVars = {players: result};
-      res.render("leaderboard", templateVars, {
-        page_name: 'leaderboard'
-      });
+      const templateVars = {players: result, page_name: "leaderboard"};
+      res.render("leaderboard", templateVars);
     });
 });
 

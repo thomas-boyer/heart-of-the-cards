@@ -8,18 +8,46 @@
         <img src="/images/heart-of-cards-logo.png" class="hotc-logo" alt="">
       </a>
       <ul class="nav-fill navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item ">
-          <a href="/gamecentre" class="nav-link">Gamecentre</a>
-        </li>
-        <li class="nav-item" <% if (page_name === 'game') { %> class="active" <% } %> >
-          <a href="/game" class="nav-link">Game</a>
-        </li>
-        <li class="nav-item">
-          <a href="/leaderboard" class="nav-link">Leaderboard</a>
-        </li>
-        <li class="nav-item">
-          <a href="/archive" class="nav-link">Archive</a>
-        </li>
+
+        <% if (page_name === 'gamecentre') { %>
+          <li class="nav-item ">
+            <a href="/gamecentre" class="nav-link active">Gamecentre</a>
+          </li>
+        <% } else { %>
+           <li class="nav-item ">
+            <a href="/gamecentre" class="nav-link">Gamecentre</a>
+          </li>
+        <% } %>
+
+        <% if (page_name === 'game') { %>
+          <li class="nav-item active">
+            <a href="/game" class="nav-link">Game</a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a href="/game" class="nav-link">Game</a>
+          </li>
+        <% } %>
+
+        <% if (page_name === 'leaderboard') { %>
+          <li class="nav-item active">
+            <a href="/leaderboard" class="nav-link">Leaderboard</a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a href="/leaderboard" class="nav-link">Leaderboard</a>
+          </li>
+        <% } %>
+
+        <% if (page_name === 'archive') { %>
+          <li class="nav-item active">
+            <a href="/archive" class="nav-link">Archive</a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a href="/archive" class="nav-link">Archive</a>
+          </li>
+        <% } %>
       </ul>
       <button class="float-right btn btn-warning notify-turn">Notifications</button>
 
