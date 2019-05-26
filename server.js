@@ -51,6 +51,70 @@ app.get("/gamecentre", (req, res) => {
   res.render("gamecentre");
 });
 
+app.post("/game/cardplayed", async (req, res) => {
+
+  let playerCards = await knex('game_players')
+    .select('player_cards').where(
+      {
+        game_id: req.body.gameID,
+        player_id: req.body.playerID
+      });
+
+  playerCards = playerCards[0].player_cards.filter(card => card != req.body.playedCard);
+
+  await knex('game_players')
+    .where(
+      {
+        game_id: req.body.gameID,
+        player_id: req.body.playerID
+      })
+    .update(
+      {
+        player_cards: playerCards,
+        player_bet: req.body.playedCard
+      });
+
+  res.end();
+});
+
+app.post("/game/start", async (req, res) => {
+
+  const gameMax = await knex('games').max('id');
+  const gameID = gameMax[0].max + 1;
+
+  const gamePlayerMax = await knex('game_players').max('id');
+  const gamePlayerID = gamePlayerMax[0].max + 1;
+
+  await knex('games')
+    // Determine the prize suit and prize deck order in front-end, and send that through request body
+    .insert({
+      id: gameID,
+      date_played: new Date(),
+      prize_suit: req.body.prize_suit,
+      prize_deck: req.body.prize_deck });
+    //Determine the player IDs and their suits in the front-end
+  await knex('game_players')
+    .insert([{
+      id: gamePlayerID,
+      game_id: gameID,
+      player_id: req.body.playerOne,
+      player_score: 0,
+      player_suit: req.body.playerOneSuit,
+      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    },
+    {
+      id: gamePlayerID + 1,
+      game_id: gameID,
+      player_id: req.body.playerTwo,
+      player_score: 0,
+      player_suit: req.body.playerTwoSuit,
+      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    }]);
+
+
+  res.end();
+});
+
 app.get("/game", (req, res) => {
   res.render("game");
 });
@@ -66,7 +130,7 @@ app.post("/login", (req, res) => {
         {
           return knex('players').insert({ id: req.body.id, games_won: 0 });
         }
-      })
+      });
   res.redirect("/gamecentre");
 });
 
