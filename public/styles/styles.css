@@ -42,58 +42,131 @@ body main.game-centre {
 body main.game-centre .jumbotron {
   border-radius: 15px 0;
 }
-body main.game .cc-r1 {
-  transform: translate(-58px, 57px);
+body main.game .p2-r1 {
+  transform: translate(-550px, 200px);
   z-index: 26;
 }
-body main.game .cc-r2 {
-  transform: translate(-48px, 57px);
+body main.game .p2-r2 {
+  transform: translate(-435px, 200px);
   z-index: 27;
 }
-body main.game .cc-r3 {
-  transform: translate(-38px, 57px);
+body main.game .p2-r3 {
+  transform: translate(-343px, 200px);
   z-index: 28;
 }
-body main.game .cc-r4 {
-  transform: translate(-28px, 57px);
+body main.game .p2-r4 {
+  transform: translate(-250px, 200px);
   z-index: 29;
 }
-body main.game .cc-r5 {
-  transform: translate(-18px, 57px);
+body main.game .p2-r5 {
+  transform: translate(-158px, 200px);
   z-index: 30;
 }
-body main.game .cc-r6 {
-  transform: translate(-8px, 57px);
+body main.game .p2-r6 {
+  transform: translate(-76px, 200px);
   cursor: move;
   z-index: 31;
 }
-body main.game .cc-r7 {
-  transform: translate(2px, 57px);
+body main.game .p2-r7 {
+  transform: translate(46px, 200px);
   z-index: 32;
 }
-body main.game .cc-r8 {
-  transform: translate(12px, 57px);
+body main.game .p2-r8 {
+  transform: translate(138px, 200px);
   z-index: 33;
 }
-body main.game .cc-r9 {
-  transform: translate(22px, 57px);
+body main.game .p2-r9 {
+  transform: translate(230px, 200px);
   z-index: 34;
 }
-body main.game .cc-r10 {
-  transform: translate(32px, 57px);
+body main.game .p2-r10 {
+  transform: translate(323px, 200px);
   z-index: 35;
 }
-body main.game .cc-r11 {
-  transform: translate(42px, 57px);
+body main.game .p2-r11 {
+  transform: translate(415px, 200px);
   z-index: 36;
 }
-body main.game .cc-r12 {
-  transform: translate(52px, 57px);
+body main.game .p2-r12 {
+  transform: translate(507px, 200px);
   z-index: 37;
 }
-body main.game .cc-r13 {
-  transform: translate(62px, 57px);
+body main.game .p2-r13 {
+  transform: translate(600px, 200px);
   z-index: 72;
+}
+body main.game .p1-r1 {
+  transform: translate(-600px, -200px);
+  z-index: 26;
+}
+body main.game .p1-r2 {
+  transform: translate(-515px, -200px);
+  z-index: 27;
+}
+body main.game .p1-r3 {
+  transform: translate(-323px, -200px);
+  z-index: 28;
+}
+body main.game .p1-r4 {
+  transform: translate(-230px, -200px);
+  z-index: 29;
+}
+body main.game .p1-r5 {
+  transform: translate(-138px, -200px);
+  z-index: 30;
+}
+body main.game .p1-r6 {
+  transform: translate(-46px, -200px);
+  cursor: move;
+  z-index: 31;
+}
+body main.game .p1-r7 {
+  transform: translate(46px, -200px);
+  z-index: 32;
+}
+body main.game .p1-r8 {
+  transform: translate(138px, -200px);
+  z-index: 33;
+}
+body main.game .p1-r9 {
+  transform: translate(230px, -200px);
+  z-index: 34;
+}
+body main.game .p1-r10 {
+  transform: translate(323px, -200px);
+  z-index: 35;
+}
+body main.game .p1-r11 {
+  transform: translate(415px, -200px);
+  z-index: 36;
+}
+body main.game .p1-r12 {
+  transform: translate(507px, -200px);
+  z-index: 37;
+}
+body main.game .p1-r13 {
+  transform: translate(600px, -200px);
+  z-index: 72;
+}
+body main.game article.player1 {
+  display: flex;
+  flex-direction: row;
+  max-width: 1200px;
+  width: 100%;
+}
+body main.game article.player2 {
+  display: flex;
+  flex-direction: row;
+  max-width: 1200px;
+  width: 100%;
+}
+body main.game article.player1 .card {
+  top: 20%;
+  left: 30%;
+}
+body main.game article.player2 .card {
+  top: 60%;
+  left: 30%;
 }
 body main.leaderboard {
   background: white;
