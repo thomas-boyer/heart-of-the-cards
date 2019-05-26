@@ -51,17 +51,29 @@ app.get("/gamecentre", (req, res) => {
   res.render("gamecentre");
 });
 
-app.post("/game/cardplayed", (req, res) => {
+app.post("/game/cardplayed", async (req, res) => {
 
-  knex('game_players')
-    .select('id').where('id', req.body.id)
-    .then( (result) =>
+  let playerCards = await knex('game_players')
+    .select('player_cards').where(
       {
-        if (!result.length)
-        {
-          return knex('players').insert({ id: req.body.id, games_won: 0 });
-        }
+        game_id: req.body.gameID,
+        player_id: req.body.playerID
       });
+
+  playerCards = playerCards[0].player_cards.filter(card => card != req.body.playedCard);
+
+  await knex('game_players')
+    .where(
+      {
+        game_id: req.body.gameID,
+        player_id: req.body.playerID
+      })
+    .update(
+      {
+        player_cards: playerCards,
+        player_bet: req.body.playedCard
+      });
+
   res.end();
 });
 
