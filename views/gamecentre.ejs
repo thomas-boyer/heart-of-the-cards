@@ -57,13 +57,19 @@
       </article>
       <article class="row">
         <div class="col">
-          <button type="button" href="archive.ejs" class="btn btn-primary btn-lg btn-block">Game Archive</button>
+        <form action="/archive">
+          <button type="button" href="/archive" class="btn btn-primary btn-lg btn-block">Game Archive</button>
+        </form>
         </div>
         <div class="col">
-          <button type="button" href="game.ejs" class="btn btn-primary btn-lg btn-block">New Game</button>
+        <form action="/game">
+          <button type="button" class="btn btn-primary btn-lg btn-block">New Game</button>
+        </form>
         </div>
         <div class="col">
-          <button type="button" href="leaderboard.ejs" class="btn btn-primary btn-lg btn-block">Leaderboard</button>
+        <form action="/leaderboard">
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Leaderboard</button>
+        </form>
         </div>
       </article>
     </main>
