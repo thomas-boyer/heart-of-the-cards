@@ -9,20 +9,24 @@ const express     = require("express");
 const bodyParser  = require("body-parser");
 const sass        = require("node-sass-middleware");
 const app         = express();
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const http        = require('http');
+const server      = require('http').Server(app);
+const io          = require('socket.io')(server);
+const request     = require('request');
 
 const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
 
-const cookieSession = require('cookie-session');
-app.use(cookieSession({ name: 'session', keys: ['key1', 'key2'] }));
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 
 // Seperated Routes for each Resource
 const usersRoutes = require("./routes/users");
 
+let usernames = {};
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
 // 'dev' = Concise output colored by response status for development use.
 //         The :status token will be colored red for server error codes, yellow for client error codes, cyan for redirection codes, and uncolored for all other codes.
@@ -81,6 +85,9 @@ app.post("/game/cardplayed", async (req, res) => {
 
 app.post("/game/start", async (req, res) => {
 
+  console.log("HERE");
+  console.log(req.body);
+
   const gameMax = await knex('games').max('id');
   const gameID = gameMax[0].max + 1;
 
@@ -92,8 +99,8 @@ app.post("/game/start", async (req, res) => {
     .insert({
       id: gameID,
       date_played: new Date(),
-      prize_suit: req.body.prize_suit,
-      prize_deck: req.body.prize_deck });
+      prize_suit: req.body.prizeSuit,
+      prize_deck: req.body.prizeDeck });
     //Determine the player IDs and their suits in the front-end
   await knex('game_players')
     .insert([{
@@ -113,7 +120,6 @@ app.post("/game/start", async (req, res) => {
       player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
     }]);
 
-
   res.end();
 });
 
@@ -124,7 +130,8 @@ app.get("/game", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  req.session.id = req.body.id;
+
+  res.cookie('id', req.body.id);
 
   knex('players')
     .select('id').where('id', req.body.id)
@@ -140,7 +147,7 @@ app.post("/login", (req, res) => {
 
 app.get("/login", (req, res) => {
 
-  if (req.session.id) res.redirect("/gamecentre");
+  if (req.cookies.id) res.redirect("/gamecentre");
   res.render("index");
 });
 
@@ -178,7 +185,7 @@ app.get("/leaderboard", (req, res) => {
 // Home page
 app.get("/", (req, res) => {
 
-  if (req.session.id) res.redirect("/gamecentre");
+  if (req.cookies.id) res.redirect("/gamecentre");
   else res.redirect("/login");
 });
 
@@ -195,7 +202,7 @@ const suits =
   3: 'diamonds'
 };
 
-const cardKey =
+let cardKey =
 [
   {1: 'ace'},
   {2: 2},
@@ -246,22 +253,7 @@ const playerTwoCards =
   {13: 'king'}
 ]
 
-const prizeCards =
-[
-  {1: 'ace'},
-  {2: 2},
-  {3: 3},
-  {4: 4},
-  {5: 5},
-  {6: 6},
-  {7: 7},
-  {8: 8},
-  {9: 9},
-  {10: 10},
-  {11: 'jack'},
-  {12: 'queen'},
-  {13: 'king'}
-]
+const prizeDeck = [];
 
 let availableSuits = [0,1,2,3];
 
@@ -310,11 +302,18 @@ let prizeSuit;
 io.on('connection', function(socket) {
   console.log(`User ${socket.id} has connected to the game.`);
 
+  let cookie = socket.handshake.headers.cookie;
+  let idExcess = cookie.substring(cookie.indexOf("id=") + 3);
+  let id = idExcess.substring(0, idExcess.indexOf(";"));
+
+  //console.log("handshake:", handshake);
+
    // Track number of players connected, assignment of player designations
   socket.on('socketAssignment', function () {
     if (connectCounter === 0) {
       p1id = socket.id
       playerInfo[socket.id] = {
+        username: id,
         designation: 'player1',
         id: socket.id,
         score: 0
@@ -324,6 +323,7 @@ io.on('connection', function(socket) {
     } else if (connectCounter === 1) {
       p2id = socket.id
       playerInfo[socket.id] = {
+        username: id,
         designation: 'player2',
         id: socket.id,
         score: 0,
@@ -408,11 +408,7 @@ io.on('connection', function(socket) {
 
   const newRound = function () {
     // Set prize.
-    prizeCard = prizeCards[Math.floor(Math.random() * prizeCards.length)];
-    if (prizeCard === prizeCards[prizeCards.length - 1]) {
-      prizeCards.pop();
-    }
-    else prizeCards.splice(prizeCards.indexOf(prizeCard), 1);
+    prizeCard = prizeDeck.pop();
 
     // Send message
     io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over.
@@ -470,6 +466,37 @@ io.on('connection', function(socket) {
     }
     else availableSuits.splice(availableSuits.indexOf(prizeSuit), 1);
 
+    for (let i = 0; i < 13; i++)
+    {
+      let randomCardIndex = Math.floor(Math.random() * cardKey.length);
+      let randomCard;
+      if (randomCardIndex === cardKey.length)
+      {
+        randomCard = cardKey.pop();
+      }
+      else randomCard = cardKey.splice(randomCardIndex, 1)[0];
+
+      prizeDeck.push(randomCard);
+    }
+    cardKey =
+    [
+      {1: 'ace'},
+      {2: 2},
+      {3: 3},
+      {4: 4},
+      {5: 5},
+      {6: 6},
+      {7: 7},
+      {8: 8},
+      {9: 9},
+      {10: 10},
+      {11: 'jack'},
+      {12: 'queen'},
+      {13: 'king'}
+    ];
+
+
+
     // Create hand
 
     playerInfo[p1id].cardString = '';
@@ -485,6 +512,29 @@ io.on('connection', function(socket) {
     {
       playerInfo[p2id].cardString += Object.values(card) + ' ';
     }
+
+    console.log(playerInfo[p1id].username);
+    console.log(playerInfo[p2id].username);
+
+    // IN PROGRESS
+    // const req = http.request(
+    //   {
+    //     host: 'localhost',
+    //     port: 8081,
+    //     path: '/game/start',
+    //     method: 'POST',
+    //   });
+
+    // req.write(JSON.stringify({
+    //   prizeSuit,
+    //   prizeDeck,
+    //   playerOne: playerInfo[p1id].username,
+    //   playerTwo: playerInfo[p2id].username,
+    //   playerOneSuit: playerInfo[p1id].suit,
+    //   playerOneSuit: playerInfo[p2id].suit
+    // }));
+
+    // req.end;
 
 
     io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game.
