@@ -85,25 +85,65 @@
 
     <script>
       // Identify the IP address and PORT that a socket will connect to.
-      const socket = io.connect('http://172.46.2.110:8080');
+      const socket = io.connect('localhost:8081');
 
+      // Handler function for receiving player info assignment messages
+      socket.on('connect', function () {
+        socket.emit('socketAssignment')
+      })
+
+      // Handler function for welcome message
       socket.on('welcome', function (message) {
-        console.log(JSON.parse(message)['message']);
+        console.log(JSON.parse(message));
       });
 
+      // Handler function for choice message
+      socket.on('pleaseChoose', function (message) {
+        console.log(message)
+        $('.card').click(function (event) {
+          event.preventDefault()
+          $(this).hide();
+          socket.emit('cardChoice', $(this).data('value'))
+          $('.card').off('click');
+        })
+      })
+
+      socket.on('Selected', function () {
+        console.log('Thank you. Please wait for your opponent to select a card.')
+      })
+
+      socket.on('lose', function (message) {
+        console.log(message);
+      })
+
+      socket.on('win', function (message) {
+        console.log(message);
+      })
+
+      socket.on('draw', function (message) {
+        console.log(message);
+      })
+
+      socket.on('endgame', function (message) {
+        console.log(message)
+      })
+
+      socket.on('drawgame', function (message) {
+        console.log(message)
+      })
+/*
       socket.on('player1turn', function (message) {
         console.log(message)
-
         $('.card').click(function (event) {
-          event.preventDefault();
-          socket.emit('card-pick', $(this).html(), function () {
-            // console.log(`You've selected ${$(this)}`)
-            $('button').hide();
-          })
+          event.preventDefault()
+          console.log('Click detected. The card picked is a', $(this).data('value'))
+          $(this).hide();
+          socket.send($(this).data('value'))
         })
-
-
       })
+*/
+
+
 
 
 
@@ -112,6 +152,7 @@
 
       // })
     </script>
+
     <script>
     $(document).ready(function(){
       function gameTurn() {
