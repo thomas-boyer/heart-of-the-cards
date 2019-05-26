@@ -14,7 +14,7 @@
 
     <link href="https://fonts.googleapis.com/css?family=Bitter:400,400i,700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="deck-of-cards/example/example.css" type="text/css">
+    <link rel="stylesheet" href="/example/example.css" type="text/css">
 
 
     <link rel="stylesheet" href="/styles/layout.css" type="text/css" />
@@ -26,21 +26,36 @@
   <body>
     <% include ../views/partials/_header %>
     <main class="container-fluid game">
-      <article style="display: flex;flex-direction: row;">
-        <div id="game-play"></div>
-        <div class="card clubs rank1 cc-r1" data-value="1"> <div class="face"></div></div>
-        <div class="card clubs rank2 cc-r2" data-value="2"><div class="face"></div></div>
-        <div class="card clubs rank3 cc-r3" data-value="3"><div class="face"></div></div>
-        <div class="card clubs rank4 cc-r4" data-value="4"><div class="face"></div></div>
-        <div class="card clubs rank5 cc-r5" data-value="5"><div class="face"></div></div>
-        <div class="card clubs rank6 cc-r6" data-value="6"><div class="face"></div></div>
-        <div class="card clubs rank7 cc-r7" data-value="7"><div class="face"></div></div>
-        <div class="card clubs rank8 cc-r8" data-value="8"><div class="face"></div></div>
-        <div class="card clubs rank9 cc-r9" data-value="9"><div class="face"></div></div>
-        <div class="card clubs rank10 cc-r10" data-value="10"><div class="face"></div></div>
-        <div class="card clubs rank11 cc-r11" data-value="11"><div class="face"></div></div>
-        <div class="card clubs rank12 cc-r12" data-value="12"><div class="face"></div></div>
-        <div class="card clubs rank13 cc-r13"data-value="13"><div class="face"></div></div>
+      <article class="player1-cards">
+        <div class="card p1-r1" data-value="1"> <div class="back"></div></div>
+        <div class="card p1-r2" data-value="2"><div class="back"></div></div>
+        <div class="card p1-r3" data-value="3"><div class="back"></div></div>
+        <div class="card p1-r4" data-value="4"><div class="back"></div></div>
+        <div class="card p1-r5" data-value="5"><div class="back"></div></div>
+        <div class="card p1-r6" data-value="6"><div class="back"></div></div>
+        <div class="card p1-r7" data-value="7"><div class="back"></div></div>
+        <div class="card p1-r8" data-value="8"><div class="back"></div></div>
+        <div class="card p1-r9" data-value="9"><div class="back"></div></div>
+        <div class="card p1-r10" data-value="10"><div class="back"></div></div>
+        <div class="card p1-r11" data-value="11"><div class="back"></div></div>
+        <div class="card p1-r12" data-value="12"><div class="back"></div></div>
+        <div class="card p1-r13"data-value="13"><div class="back"></div></div>
+      </article>
+      <article id="game-play"></article>
+      <article class="player2cards">
+        <div class="card clubs rank1 p2-r1" data-value="1"> <div class="face"></div></div>
+        <div class="card clubs rank2 p2-r2" data-value="2"><div class="face"></div></div>
+        <div class="card clubs rank3 p2-r3" data-value="3"><div class="face"></div></div>
+        <div class="card clubs rank4 p2-r4" data-value="4"><div class="face"></div></div>
+        <div class="card clubs rank5 p2-r5" data-value="5"><div class="face"></div></div>
+        <div class="card clubs rank6 p2-r6" data-value="6"><div class="face"></div></div>
+        <div class="card clubs rank7 p2-r7" data-value="7"><div class="face"></div></div>
+        <div class="card clubs rank8 p2-r8" data-value="8"><div class="face"></div></div>
+        <div class="card clubs rank9 p2-r9" data-value="9"><div class="face"></div></div>
+        <div class="card clubs rank10 p2-r10" data-value="10"><div class="face"></div></div>
+        <div class="card clubs rank11 p2-r11" data-value="11"><div class="face"></div></div>
+        <div class="card clubs rank12 p2-r12" data-value="12"><div class="face"></div></div>
+        <div class="card clubs rank13 p2-r13"data-value="13"><div class="face"></div></div>
       </article>
       <article>
         <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
@@ -66,7 +81,7 @@
 
       // display it in a html container
       var $container = document.getElementById('game-play');
-      // deck.mount($container);
+      deck.mount($container);
 
       // Select the first card
       var card = deck.cards[0];
@@ -77,10 +92,10 @@
       // deck.bysuit();
       // card.flip();
 
-      deck.cards.forEach(function (card){
-        card.enableDragging();
-        card.enableFlipping();
-      })
+      // deck.cards.forEach(function (card){
+      //   card.enableDragging();
+      //   card.enableFlipping();
+      // })
     </script>
 
     <script>
