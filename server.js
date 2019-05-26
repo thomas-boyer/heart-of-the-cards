@@ -65,26 +65,42 @@ app.post("/game/cardplayed", (req, res) => {
   res.end();
 });
 
-app.post("/game/start", (req, res) => {
+app.post("/game/start", async (req, res) => {
 
-  function findMax(callback)
-  {
-    knex('games').max('id').then( (result) => { callback(result) } );
-  }
+  const gameMax = await knex('games').max('id');
+  const gameID = gameMax[0].max + 1;
 
-  console.log(findMax( (result) => { return result } ));
+  const gamePlayerMax = await knex('game_players').max('id');
+  const gamePlayerID = gamePlayerMax[0].max + 1;
+
+  await knex('games')
+    // Determine the prize suit and prize deck order in front-end, and send that through request body
+    .insert({
+      id: gameID,
+      date_played: new Date(),
+      prize_suit: req.body.prize_suit,
+      prize_deck: req.body.prize_deck });
+    //Determine the player IDs and their suits in the front-end
+  await knex('game_players')
+    .insert([{
+      id: gamePlayerID,
+      game_id: gameID,
+      player_id: req.body.playerOne,
+      player_score: 0,
+      player_suit: req.body.playerOneSuit,
+      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    },
+    {
+      id: gamePlayerID + 1,
+      game_id: gameID,
+      player_id: req.body.playerTwo,
+      player_score: 0,
+      player_suit: req.body.playerTwoSuit,
+      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    }]);
 
 
-  console.log(max);
-
-  // knex('games')
-  //   //Determine the prize suit and prize deck order in front-end, and send that through request body
-  //   .insert({ id: gameID, date_played: new Date(), prize_suit: req.body.prize_suit, prize_deck: req.body.prize_deck })
-  //   .then( (result) =>
-  //     {
-  //       return console.log(result);
-  //     });
-  // res.end();
+  res.end();
 });
 
 app.get("/game", (req, res) => {
