@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 
-const PORT        = process.env.PORT || 8081;
+const PORT        = process.env.PORT || 8080;
 const ENV         = process.env.ENV || "development";
 const express     = require("express");
 const bodyParser  = require("body-parser");
@@ -190,7 +190,7 @@ let prizeCard;
 let prizeSuit;
 
 // Whenever a new socket connects
-io.on('connection', async (socket) => {
+io.on('connection', function(socket){
   console.log(`User ${socket.id} has connected to the game.`);
 
   let gameID;
@@ -228,6 +228,8 @@ io.on('connection', async (socket) => {
     } else if (connectCounter === 1) {
 
       let gameID = await joinExistingGame();
+
+      console.log("Handshake:", socket.handshake);
 
       let cookie = socket.handshake.headers.cookie;
       let userID = cookie.substring(cookie.indexOf("id=") + 3);

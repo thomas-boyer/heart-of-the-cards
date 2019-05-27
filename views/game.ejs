@@ -80,7 +80,6 @@
     <script>
       // Instantiate a deck
       var deck = Deck();
-      console.log(deck);
 
       // display it in a html container
       var $container = document.getElementById('game-play');
@@ -116,7 +115,7 @@
       $(document).ready(function(){
 
         // Identify the IP address and PORT that a socket will connect to.
-        const socket = io.connect('http://172.46.2.43:8081');
+        const socket = io.connect('http://172.46.2.110:8080');
 
       // Handler function for choice message
       socket.on('pleaseChoose', function (message, gameID) {
@@ -153,7 +152,7 @@
         socket.on('foundopponent', function (message) {
           $('.toast .toast-body').empty();
           $('.toast .toast-body').append(message);
-          showNotication();
+          showNotification();
         })
 
         // Handler function for welcome message
