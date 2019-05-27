@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 
-const PORT        = process.env.PORT || 8080;
+const PORT        = process.env.PORT || 3000;
 const ENV         = process.env.ENV || "development";
 const express     = require("express");
 const bodyParser  = require("body-parser");
@@ -136,6 +136,23 @@ const suits =
 
 let cardValues = [1,2,3,4,5,6,7,8,9,10,11,12,13];
 
+let cardKey =
+{
+  1: 'ace',
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
+  11: 'jack',
+  12: 'queen',
+  13: 'king'
+}
+
 const playerOneCards =
 [
   {1: 'ace'},
@@ -190,7 +207,7 @@ let prizeCard;
 let prizeSuit;
 
 // Whenever a new socket connects
-io.on('connection', async (socket) => {
+io.on('connection', function(socket){
   console.log(`User ${socket.id} has connected to the game.`);
 
   let gameID;
@@ -201,12 +218,15 @@ io.on('connection', async (socket) => {
     if (connectCounter === 0) {
       gameID = await writeNewGame();
 
+      console.log("Handshake:", socket.handshake);
+
       let cookie = socket.handshake.headers.cookie;
       let userID = cookie.substring(cookie.indexOf("id=") + 3);
       if (userID.includes(';'))
       {
         userID = userID.substring(0, userID.indexOf(";"));
       }
+      console.log("cookie", cookie);
 
       p1id = socket.id;
 
@@ -228,6 +248,8 @@ io.on('connection', async (socket) => {
     } else if (connectCounter === 1) {
 
       let gameID = await joinExistingGame();
+
+      console.log("Handshake:", socket.handshake);
 
       let cookie = socket.handshake.headers.cookie;
       let userID = cookie.substring(cookie.indexOf("id=") + 3);
@@ -286,14 +308,11 @@ io.on('connection', async (socket) => {
     // Send the winner a message and the loser a message;:
 
     if (gameInfo[gameID][player1].bet !== gameInfo[gameID][player2].bet) {
-      io.to(`${roundLoser}`).emit('lose',
-        `You played ${gameInfo[gameID][roundLoser].bet}. Your opponent played ${gameInfo[gameID][roundWinner].bet} Your opponent had the high card. Your current score: ${gameInfo[gameID][roundLoser].score} Your opponent's score: ${gameInfo[gameID][roundWinner].score}.`
-        )
 
-      io.to(`${roundWinner}`).emit('win',
-        `You played ${gameInfo[gameID][roundWinner].bet}. Your opponent played ${gameInfo[gameID][roundLoser].bet}. Congratulations, you had the high card. Your current score: ${gameInfo[gameID][roundWinner].score} Your opponent's score: ${gameInfo[gameID][roundLoser].score}.`
+      io.emit('notDraw',
+        `${gameInfo[gameID][player1].username} played ${gameInfo[gameID][player1].bet}. ${gameInfo[gameID][player2].username} played ${gameInfo[gameID][player2].bet}.
+        ${gameInfo[gameID][player1].bet > gameInfo[gameID][player2].bet ? gameInfo[gameID][player1].username : gameInfo[gameID][player2].username} wins ${prizeCard} points!`
         )
-
     }
     gameInfo[gameID][player1].bet = null;
     gameInfo[gameID][player2].bet = null;
@@ -316,7 +335,9 @@ io.on('connection', async (socket) => {
 
 
     if (gameInfo[gameID].prizeDeck.length > 0) {
-      newRound(gameID);
+      setTimeout(function () {
+        newRound(gameID)
+      }, 1000);
     }
     else {
 
@@ -346,8 +367,10 @@ io.on('connection', async (socket) => {
     // Set prize.
     prizeCard = gameInfo[gameID].prizeDeck.pop();
 
+    // io.emit('removeCard');
+
     // Send message
-    io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over. It is the ${Object.values(prizeCard)} of ${suits[gameInfo[gameID].prizeSuit]}. Please select a card.`, gameID);
+    io.emit('pleaseChoose', `Round ${gameInfo[gameID].roundNumber} : A prize card is flipped over. It is the ${cardKey[prizeCard]} of ${suits[gameInfo[gameID].prizeSuit]}. Please select a card.`, gameID);
   }
 
    // Assigning the player's values to the object
@@ -386,8 +409,6 @@ io.on('connection', async (socket) => {
         }
       }
     }
-    //console.log('The hand of', socket.id, gameInfo[gameID][socket.id].cards)
-    io.to(`${socket.id}`).emit('Selected')
   })
 
    //Whenever a socket disconnects
@@ -464,7 +485,7 @@ io.on('connection', async (socket) => {
     }
 
 
-    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[gameInfo[gameID][player1].suit]}. Player two's suit is ${suits[gameInfo[gameID][player2].suit]}. The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}. Game is starting now.`), suits[gameInfo[gameID][player1].suit], suits[gameInfo[gameID][player2].suit], suits[gameInfo[gameID].prizeSuit]);
+    io.emit('welcome', suits[gameInfo[gameID][player1].suit], suits[gameInfo[gameID][player2].suit], suits[gameInfo[gameID].prizeSuit], gameInfo[gameID].prizeDeck);
 
   } // This closes the main game function
 
@@ -494,6 +515,9 @@ const finalizeGame = async (data, gameID) =>
   const gamePlayerMax = await knex('game_players').max('id');
   const gamePlayerID = gamePlayerMax[0].max + 1;
 
+  console.log(data.playerOne);
+  console.log(data.playerTwo);
+
   await knex('games')
     .where('id', gameID)
     // Determine the prize suit and prize deck order in front-end, and send that through request body
@@ -501,6 +525,28 @@ const finalizeGame = async (data, gameID) =>
       date_played: new Date(),
       prize_suit: data.prize_suit,
       prize_deck: data.prize_deck });
+
+    knex('players')
+      .select('id').where('id', data.playerOne)
+      .then( (result) =>
+        {
+          if (!result.length)
+          {
+
+            return knex('players').insert({ id: data.playerOne, games_won: 0 });
+          }
+        });
+
+    knex('players')
+      .select('id').where('id', data.playerTwo)
+      .then( (result) =>
+        {
+          if (!result.length)
+          {
+            return knex('players').insert({ id: data.playerTwo, games_won: 0 });
+          }
+        });
+
     //Determine the player IDs and their suits in the front-end
   await knex('game_players')
     .insert([{
