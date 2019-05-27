@@ -81,7 +81,7 @@
       $(document).ready(function(){
 
         // Identify the IP address and PORT that a socket will connect to.
-        const socket = io.connect('http://localhost:3000');
+        const socket = io.connect('http://localhost:8080');
 
         // // Instantiate a deck
         // var deck = Deck();
@@ -140,13 +140,6 @@
           showNotification();
         })
 
-        socket.on('removeCard', function()
-          {
-            console.log("HIIIIII");
-
-            $('#game-play > div:last-of-type').remove();
-          })
-
         // Handler function for welcome message
         socket.on('welcome', function (playerOneSuit, playerTwoSuit, prizeSuit, prizeCards) {
 
@@ -157,7 +150,7 @@
           {
             $('#game-play').append(`<div class="card rank${prizeCards[i]} ${prizeSuit}" data-value="${prizeCards[i]}"><div class="face"></div></div>`);
           }
-          $('#game-play').append("<blockquote style="z-index: -100"></blockquote>")
+          $('#game-play').append('<blockquote style="z-index: -100"></blockquote>')
 
           // hideNotification();
           // $('.toast .toast-body').empty();
@@ -173,13 +166,16 @@
             $('.toast .toast-body').empty().append(message);
             showNotification();
 
+            alert("HEY!!!!");
+
+            $('#game-play > div:last-of-type').remove();
+
             $('.player2-cards .card').click(function (event) {
               event.preventDefault();
               $('.card').off('click');
               $(this).hide();
               socket.emit('cardChoice', $(this).data('value'), gameID);
             })
-
         })
 
         socket.on('notDraw', function (message) {
