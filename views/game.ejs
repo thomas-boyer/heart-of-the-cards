@@ -116,7 +116,7 @@
       $(document).ready(function(){
 
         // Identify the IP address and PORT that a socket will connect to.
-        const socket = io.connect('http://172.46.2.110:8081');
+        const socket = io.connect('http://172.46.2.43:8081');
 
       // Handler function for choice message
       socket.on('pleaseChoose', function (message, gameID) {
@@ -157,8 +157,13 @@
         })
 
         // Handler function for welcome message
-        socket.on('welcome', function (message) {
+        socket.on('welcome', function (message, playerOneSuit, playerTwoSuit, prizeSuit) {
           console.log(JSON.parse(message));
+
+          $('.player1-cards div').addClass(playerOneSuit);
+          $('.player2-cards div').addClass(playerTwoSuit);
+          $('#game-play div').addClass(prizeSuit);
+
           // hideNotification();
           // $('.toast .toast-body').empty();
           // $('.toast .toast-body').prepend(message)
