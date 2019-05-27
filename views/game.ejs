@@ -57,19 +57,18 @@
         <div class="card clubs rank12 p2-r12" data-value="12"><div class="face"></div></div>
         <div class="card clubs rank13 p2-r13"data-value="13"><div class="face"></div></div>
       </article>
-      <article>
+      <!-- <article>
         <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" style="z-index: 1;">
           <div class="toast-header">
             <img src="..." class="rounded mr-2" alt="...">
             <strong class="mr-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="toast-body"></div>
         </div>
-      </article>
+      </article> -->
     </main>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -105,8 +104,10 @@
 
       deck.cards.forEach(function (card){
         // card.enableDragging();
+        card.enableFlipping();
+        // deck.shuffle();
         // card.enableFlipping();
-        deck.shuffle({duration: 500});
+        // deck.shuffle({duration: 500});
       })
     </script>
 
@@ -114,34 +115,59 @@
 
       $(document).ready(function(){
 
-        function gameTurn() {
-          $('.toast').toast('show', 50000000);
+        // Identify the IP address and PORT that a socket will connect to.
+        const socket = io.connect('http://172.46.2.110:8081');
+
+        function showNotification () {
+          $('.toast').toast('show');
         }
 
-        // Identify the IP address and PORT that a socket will connect to.
-        const socket = io.connect('http://172.46.2.43:8080');
+        function hideNotification() {
+          $('.toast').toast('hide');
+        }
+
 
         // Handler function for receiving player info assignment messages
         socket.on('connect', function () {
           socket.emit('socketAssignment')
+          // $('.toast .toast-body').prepend('Waiting for opponent...')
+          // showNotification();
+        })
+
+        socket.on('pending', function (message) {
+          $('.toast .toast-body').append(message)
+          showNotification();
+        })
+
+        socket.on('foundopponent', function (message) {
+          $('.toast .toast-body').empty();
+          $('.toast .toast-body').append(message);
+          showNotication();
         })
 
         // Handler function for welcome message
         socket.on('welcome', function (message) {
           console.log(JSON.parse(message));
+          // hideNotification();
+          // $('.toast .toast-body').empty();
           // $('.toast .toast-body').prepend(message)
+          // showNotification();
         });
 
         // Handler function for choice message
         socket.on('pleaseChoose', function (message) {
           console.log(message)
-          $('.toast .toast-body').prepend(message)
-          gameTurn();
-          $('.player2cards .card').click(function (event) {
-            event.preventDefault()
-            $(this).hide();
-            socket.emit('cardChoice', $(this).data('value'))
+
+          // hideNotification();
+          // $('.toast .toast-body').empty();
+          // $('.toast .toast-body').prepend(message);
+          // showNotification();
+
+          $('.player2-cards .card').click(function (event) {
+            event.preventDefault();
             $('.card').off('click');
+            $(this).hide();
+            socket.emit('cardChoice', $(this).data('value'));
           })
         })
 
@@ -168,17 +194,10 @@
         socket.on('drawgame', function (message) {
           console.log(message)
         })
+
       });
     </script>
 
-    <script>
-
-    // $(document).ready(function(){
-    //  $('article.player1-cards').addClass('hide');
-    //  $('article.player2-cards').addClass('hide')
-    // });
-
-    </script>
   </body>
 </html>
 

@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 
-const PORT        = process.env.PORT || 8080;
+const PORT        = process.env.PORT || 8081;
 const ENV         = process.env.ENV || "development";
 const express     = require("express");
 const bodyParser  = require("body-parser");
@@ -319,7 +319,9 @@ io.on('connection', function(socket) {
         score: 0
       }
     connectCounter++
+    io.to(`${socket.id}`).emit('pending', 'Waiting for an opponent...');
     console.log(connectCounter, 'players now connected')
+
     } else if (connectCounter === 1) {
       p2id = socket.id
       playerInfo[socket.id] = {
@@ -332,9 +334,8 @@ io.on('connection', function(socket) {
       playerInfo[p1id]['opId'] = playerInfo[p2id]['id'];
 
       connectCounter++;
-
       console.log(connectCounter, 'players now connected')
-
+      io.emit('foundopponent', 'Opponent found, game starting...')
       mainGame();
       newRound();
     }
@@ -478,8 +479,6 @@ io.on('connection', function(socket) {
       {13: 'king'}
     ];
 
-
-
     // Create hand
 
     playerInfo[p1id].cardString = '';
@@ -520,7 +519,7 @@ io.on('connection', function(socket) {
     // req.end;
 
 
-    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[playerInfo[p1id].suit]}. Player two's suit is ${suits[playerInfo[p2id].suit]}. The prize suit is ${suits[prizeSuit]}. Game is starting now.`)
+    io.emit('welcome', JSON.stringify(`Hi~! Welcome to Goofspiel. Game is starting now!`)
       )
   } // This closes the main game function
 
