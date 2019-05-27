@@ -68,7 +68,7 @@
           </div> -->
           <div class="toast-body"></div>
         </div>
-      </article> -->
+      </article>
     </main>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -117,7 +117,7 @@
       $(document).ready(function(){
 
         // Identify the IP address and PORT that a socket will connect to.
-        const socket = io.connect('http://172.46.2.110:8081');
+        const socket = io.connect('http://172.46.2.43:8080');
 
       // Handler function for choice message
       socket.on('pleaseChoose', function (message, gameID) {
@@ -142,8 +142,8 @@
         // Handler function for receiving player info assignment messages
         socket.on('connect', function () {
           socket.emit('socketAssignment')
-          // $('.toast .toast-body').prepend('Waiting for opponent...')
-          // showNotification();
+          $('.toast .toast-body').prepend('Waiting for opponent...')
+          showNotification();
         })
 
         socket.on('pending', function (message) {
@@ -160,20 +160,20 @@
         // Handler function for welcome message
         socket.on('welcome', function (message) {
           console.log(JSON.parse(message));
-          // hideNotification();
-          // $('.toast .toast-body').empty();
-          // $('.toast .toast-body').prepend(message)
-          // showNotification();
+          hideNotification();
+          $('.toast .toast-body').empty();
+          $('.toast .toast-body').prepend(message)
+          showNotification();
         });
 
         // Handler function for choice message
         socket.on('pleaseChoose', function (message) {
           console.log(message)
 
-          // hideNotification();
-          // $('.toast .toast-body').empty();
-          // $('.toast .toast-body').prepend(message);
-          // showNotification();
+          hideNotification();
+          $('.toast .toast-body').empty();
+          $('.toast .toast-body').prepend(message);
+          showNotification();
 
           $('.player2-cards .card').click(function (event) {
             event.preventDefault();
