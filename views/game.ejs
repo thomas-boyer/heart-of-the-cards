@@ -116,7 +116,7 @@
       $(document).ready(function(){
 
         // Identify the IP address and PORT that a socket will connect to.
-        const socket = io.connect('http://172.46.2.110:8081');
+        const socket = io.connect('http://localhost:8080');
 
         function showNotification () {
           $('.toast').toast('show');
@@ -126,12 +126,9 @@
           $('.toast').toast('hide');
         }
 
-
         // Handler function for receiving player info assignment messages
         socket.on('connect', function () {
           socket.emit('socketAssignment')
-          // $('.toast .toast-body').prepend('Waiting for opponent...')
-          // showNotification();
         })
 
         socket.on('pending', function (message) {
@@ -140,59 +137,69 @@
         })
 
         socket.on('foundopponent', function (message) {
-          $('.toast .toast-body').empty();
-          $('.toast .toast-body').append(message);
-          showNotication();
+          $('.toast .toast-body').empty().append(message);
+          showNotification();
         })
 
         // Handler function for welcome message
-        socket.on('welcome', function (message) {
-          console.log(JSON.parse(message));
-          // hideNotification();
-          // $('.toast .toast-body').empty();
-          // $('.toast .toast-body').prepend(message)
-          // showNotification();
-        });
+        // socket.on('welcome', function (message) {
+        //   console.log(JSON.parse(message));
+        //   setTimeout(function () {
+        //     $('.toast .toast-body').empty().append(message);
+        //     showNotification();
+        //   }, 3000)
+        // });
 
         // Handler function for choice message
         socket.on('pleaseChoose', function (message) {
           console.log(message)
 
-          // hideNotification();
-          // $('.toast .toast-body').empty();
-          // $('.toast .toast-body').prepend(message);
-          // showNotification();
+          setTimeout(function () {
+            $('.toast .toast-body').empty().append(message);
+            showNotification();
 
-          $('.player2-cards .card').click(function (event) {
-            event.preventDefault();
-            $('.card').off('click');
-            $(this).hide();
-            socket.emit('cardChoice', $(this).data('value'));
-          })
+            $('.player2-cards .card').click(function (event) {
+              event.preventDefault();
+              $('.card').off('click');
+              $(this).hide();
+              socket.emit('cardChoice', $(this).data('value'));
+            })
+          }, 1000);
         })
 
         socket.on('Selected', function () {
-          console.log('Thank you. Please wait for your opponent to select a card.')
+          $('.toast .toast-body').empty().append('Thank you. Please wait for your opponent to select a card.')
+          showNotification();
         })
 
         socket.on('lose', function (message) {
-          console.log(message);
+          console.log(message)
+          $('.toast .toast-body').empty().append(message);
+          showNotification();
         })
 
         socket.on('win', function (message) {
           console.log(message);
+          $('.toast .toast-body').empty().append(message);
+          showNotification();
         })
 
         socket.on('draw', function (message) {
           console.log(message);
+          $('.toast .toast-body').empty().append(message);
+          showNotification();
         })
 
         socket.on('endgame', function (message) {
           console.log(message)
+          $('.toast .toast-body').empty().append(message);
+          showNotification();
         })
 
         socket.on('drawgame', function (message) {
           console.log(message)
+          $('.toast .toast-body').empty().append(message);
+          showNotification();
         })
 
       });

@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 
-const PORT        = process.env.PORT || 8081;
+const PORT        = process.env.PORT || 8080;
 const ENV         = process.env.ENV || "development";
 const express     = require("express");
 const bodyParser  = require("body-parser");
@@ -335,7 +335,7 @@ io.on('connection', function(socket) {
 
       connectCounter++;
       console.log(connectCounter, 'players now connected')
-      io.emit('foundopponent', 'Opponent found, game starting...')
+      io.emit('foundopponent', 'Opponent found, game loading...')
       mainGame();
       newRound();
     }
@@ -373,7 +373,7 @@ io.on('connection', function(socket) {
     console.log('We are at the start of round', roundNumber)
 
     if (roundNumber <= 13) {
-      newRound();
+      setTimeout(function () { newRound() }, 1000);
     } else {
       if (playerInfo[p1id]['score'] > playerInfo[p2id]['score']) {
         gameWinner = p1id
@@ -519,8 +519,7 @@ io.on('connection', function(socket) {
     // req.end;
 
 
-    io.emit('welcome', JSON.stringify(`Hi~! Welcome to Goofspiel. Game is starting now!`)
-      )
+    // io.emit('welcome', JSON.stringify(`Welcome to Goofspiel. Game is starting now!`))
   } // This closes the main game function
 
 }); // This is closing the socket connection
