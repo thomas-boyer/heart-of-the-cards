@@ -201,12 +201,15 @@ io.on('connection', async (socket) => {
     if (connectCounter === 0) {
       gameID = await writeNewGame();
 
+      console.log("Handshake:", socket.handshake);
+
       let cookie = socket.handshake.headers.cookie;
       let userID = cookie.substring(cookie.indexOf("id=") + 3);
       if (userID.includes(';'))
       {
         userID = userID.substring(0, userID.indexOf(";"));
       }
+      console.log("cookie", cookie);
 
       p1id = socket.id;
 
@@ -316,7 +319,9 @@ io.on('connection', async (socket) => {
 
 
     if (gameInfo[gameID].prizeDeck.length > 0) {
-      newRound(gameID);
+      setTimeout(function () {
+        newRound(gameID)
+      }, 1000);
     }
     else {
 
@@ -463,11 +468,7 @@ io.on('connection', async (socket) => {
       gameInfo[gameID][player2].cardString += Object.values(card) + ' ';
     }
 
-<<<<<<< HEAD
-    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[gameInfo[gameID][player1].suit]}. Player two's suit is ${suits[gameInfo[gameID][player2].suit]}. The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}. Game is starting now.`));
-=======
     io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[gameInfo[gameID][player1].suit]}. Player two's suit is ${suits[gameInfo[gameID][player2].suit]}. The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}. Game is starting now.`), suits[gameInfo[gameID][player1].suit], suits[gameInfo[gameID][player2].suit], suits[gameInfo[gameID].prizeSuit]);
->>>>>>> master
   } // This closes the main game function
 
 }); // This is closing the socket connection
@@ -496,6 +497,9 @@ const finalizeGame = async (data, gameID) =>
   const gamePlayerMax = await knex('game_players').max('id');
   const gamePlayerID = gamePlayerMax[0].max + 1;
 
+  console.log(data.playerOne);
+  console.log(data.playerTwo);
+
   await knex('games')
     .where('id', gameID)
     // Determine the prize suit and prize deck order in front-end, and send that through request body
@@ -503,6 +507,28 @@ const finalizeGame = async (data, gameID) =>
       date_played: new Date(),
       prize_suit: data.prize_suit,
       prize_deck: data.prize_deck });
+
+    knex('players')
+      .select('id').where('id', data.playerOne)
+      .then( (result) =>
+        {
+          if (!result.length)
+          {
+
+            return knex('players').insert({ id: data.playerOne, games_won: 0 });
+          }
+        });
+
+    knex('players')
+      .select('id').where('id', data.playerTwo)
+      .then( (result) =>
+        {
+          if (!result.length)
+          {
+            return knex('players').insert({ id: data.playerTwo, games_won: 0 });
+          }
+        });
+
     //Determine the player IDs and their suits in the front-end
   await knex('game_players')
     .insert([{
