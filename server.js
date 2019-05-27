@@ -174,16 +174,6 @@ let availableSuits = [0,1,2,3];
 
 let gameInfo = {};
 
-  // socket id : {}
-  //   designation: player1
-  //   id : socket.id
-  //   score: 0
-  //   turn: true
-  //.  opId: //
-  //   cardString:
-  //   cumScore:
-  // }
-
 let connectCounter = 0;
 let p1id;
 let p2id;
@@ -231,8 +221,9 @@ io.on('connection', async (socket) => {
         cards : [1,2,3,4,5,6,7,8,9,10,11,12,13]
       }
 
-    connectCounter++;
-    console.log(connectCounter, 'players now connected');
+    connectCounter++
+    io.to(`${socket.id}`).emit('pending', 'Waiting for an opponent...');
+    console.log(connectCounter, 'players now connected')
 
     } else if (connectCounter === 1) {
 
@@ -263,9 +254,9 @@ io.on('connection', async (socket) => {
       gameInfo[gameID][p1id].opId = p2id;
 
       connectCounter++;
-
       console.log(connectCounter, 'players now connected')
 
+      io.emit('foundopponent', 'Opponent found, game starting...')
       await mainGame(gameID, gameInfo[gameID][p1id].id, gameInfo[gameID][p2id].id);
       newRound(gameID);
     }
@@ -296,19 +287,11 @@ io.on('connection', async (socket) => {
 
     if (gameInfo[gameID][player1].bet !== gameInfo[gameID][player2].bet) {
       io.to(`${roundLoser}`).emit('lose',
-        `You played ${gameInfo[gameID][roundLoser].bet}.
-        Your opponent played ${gameInfo[gameID][roundWinner].bet}
-        Your opponent had the high card.
-        Your current score: ${gameInfo[gameID][roundLoser].score}
-        Your opponent's score: ${gameInfo[gameID][roundWinner].score}`
+        `You played ${gameInfo[gameID][roundLoser].bet}. Your opponent played ${gameInfo[gameID][roundWinner].bet} Your opponent had the high card. Your current score: ${gameInfo[gameID][roundLoser].score} Your opponent's score: ${gameInfo[gameID][roundWinner].score}.`
         )
 
       io.to(`${roundWinner}`).emit('win',
-        `You played ${gameInfo[gameID][roundWinner].bet}.
-        Your opponent played ${gameInfo[gameID][roundLoser].bet}
-        Congratulations, you had the high card.
-        Your current score: ${gameInfo[gameID][roundWinner].score}
-        Your opponent's score: ${gameInfo[gameID][roundLoser].score}`
+        `You played ${gameInfo[gameID][roundWinner].bet}. Your opponent played ${gameInfo[gameID][roundLoser].bet}. Congratulations, you had the high card. Your current score: ${gameInfo[gameID][roundWinner].score} Your opponent's score: ${gameInfo[gameID][roundLoser].score}.`
         )
 
     }
@@ -347,22 +330,14 @@ io.on('connection', async (socket) => {
         gameWinner = gameInfo[gameID][player2];
         gameLoser = gameInfo[gameID][player1];
       }
+
       if (gameInfo[gameID][player1].score !== gameInfo[gameID][player2].score) {
 
         await finishGame(gameID, gameWinner.username);
 
-        io.emit('endgame', `The game is over.
-          Player one's final score is ${gameInfo[gameID][player1].score}
-          Player two's final score is ${gameInfo[gameID][player2].score}
-          ${gameWinner['designation']} is the winner!
-          `)
+        io.emit('endgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score} Player two's final score is ${gameInfo[gameID][player2].score} ${gameWinner['designation']} is the winner!`)
       } else {
-        io.emit('drawgame', `The game is over.
-          Player one's final score is ${gameInfo[gameID][player1].score}
-          Player two's final score is ${gameInfo[gameID][player2].score}
-          There is no clear winner here, but that's okay.
-          Everyone's a winner in god's eyes lmao.
-          `)
+        io.emit('drawgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score} Player two's final score is ${gameInfo[gameID][player2].score} There is no clear winner here, but that's okay. Everyone's a winner in god's eyes lmao.`)
       }
     }
   }
@@ -372,9 +347,7 @@ io.on('connection', async (socket) => {
     prizeCard = gameInfo[gameID].prizeDeck.pop();
 
     // Send message
-    io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over.
-        It is the ${Object.values(prizeCard)} of ${suits[gameInfo[gameID].prizeSuit]}.
-        Please select a card.`, gameID);
+    io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over. It is the ${Object.values(prizeCard)} of ${suits[gameInfo[gameID].prizeSuit]}. Please select a card.`, gameID);
   }
 
    // Assigning the player's values to the object
@@ -476,8 +449,6 @@ io.on('connection', async (socket) => {
         playerTwoSuit: gameInfo[gameID][player2].suit
       }, gameID);
 
-    // // Create hand
-
     gameInfo[gameID][player1].cardString = '';
 
     gameInfo[gameID][player2].cardString='';
@@ -492,12 +463,7 @@ io.on('connection', async (socket) => {
       gameInfo[gameID][player2].cardString += Object.values(card) + ' ';
     }
 
-    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game.
-        Player one's suit is ${suits[gameInfo[gameID][player1].suit]}.
-        Player two's suit is ${suits[gameInfo[gameID][player2].suit]}.
-        The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}.
-        Game is starting now.`)
-      )
+    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[gameInfo[gameID][player1].suit]}. Player two's suit is ${suits[gameInfo[gameID][player2].suit]}. The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}. Game is starting now.`);
   } // This closes the main game function
 
 }); // This is closing the socket connection

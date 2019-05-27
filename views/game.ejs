@@ -14,7 +14,7 @@
 
     <link href="https://fonts.googleapis.com/css?family=Bitter:400,400i,700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="deck-of-cards/example/example.css" type="text/css">
+    <link rel="stylesheet" href="/example/example.css" type="text/css">
 
 
     <link rel="stylesheet" href="/styles/layout.css" type="text/css" />
@@ -26,31 +26,49 @@
   <body>
     <% include ../views/partials/_header %>
     <main class="container-fluid game">
-      <article style="display: flex;flex-direction: row;">
-        <div id="game-play"></div>
-        <div class="card clubs rank1 cc-r1" data-value="1"> <div class="face"></div></div>
-        <div class="card clubs rank2 cc-r2" data-value="2"><div class="face"></div></div>
-        <div class="card clubs rank3 cc-r3" data-value="3"><div class="face"></div></div>
-        <div class="card clubs rank4 cc-r4" data-value="4"><div class="face"></div></div>
-        <div class="card clubs rank5 cc-r5" data-value="5"><div class="face"></div></div>
-        <div class="card clubs rank6 cc-r6" data-value="6"><div class="face"></div></div>
-        <div class="card clubs rank7 cc-r7" data-value="7"><div class="face"></div></div>
-        <div class="card clubs rank8 cc-r8" data-value="8"><div class="face"></div></div>
-        <div class="card clubs rank9 cc-r9" data-value="9"><div class="face"></div></div>
-        <div class="card clubs rank10 cc-r10" data-value="10"><div class="face"></div></div>
-        <div class="card clubs rank11 cc-r11" data-value="11"><div class="face"></div></div>
-        <div class="card clubs rank12 cc-r12" data-value="12"><div class="face"></div></div>
-        <div class="card clubs rank13 cc-r13"data-value="13"><div class="face"></div></div>
+      <article class="player1-cards">
+        <div class="card p1-r1" data-value="1"> <div class="back"></div></div>
+        <div class="card p1-r2" data-value="2"><div class="back"></div></div>
+        <div class="card p1-r3" data-value="3"><div class="back"></div></div>
+        <div class="card p1-r4" data-value="4"><div class="back"></div></div>
+        <div class="card p1-r5" data-value="5"><div class="back"></div></div>
+        <div class="card p1-r6" data-value="6"><div class="back"></div></div>
+        <div class="card p1-r7" data-value="7"><div class="back"></div></div>
+        <div class="card p1-r8" data-value="8"><div class="back"></div></div>
+        <div class="card p1-r9" data-value="9"><div class="back"></div></div>
+        <div class="card p1-r10" data-value="10"><div class="back"></div></div>
+        <div class="card p1-r11" data-value="11"><div class="back"></div></div>
+        <div class="card p1-r12" data-value="12"><div class="back"></div></div>
+        <div class="card p1-r13"data-value="13"><div class="back"></div></div>
       </article>
-      <article>
-        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
-        <div class="toast" style="position: absolute; top: 0; right: 0;">
-          <div class="toast-body">
-            Hello, world! This is a toast message.
+      <article id="game-play"></article>
+      <article class="player2-cards">
+        <div class="card clubs rank1 p2-r1" data-value="1"> <div class="face"></div></div>
+        <div class="card clubs rank2 p2-r2" data-value="2"><div class="face"></div></div>
+        <div class="card clubs rank3 p2-r3" data-value="3"><div class="face"></div></div>
+        <div class="card clubs rank4 p2-r4" data-value="4"><div class="face"></div></div>
+        <div class="card clubs rank5 p2-r5" data-value="5"><div class="face"></div></div>
+        <div class="card clubs rank6 p2-r6" data-value="6"><div class="face"></div></div>
+        <div class="card clubs rank7 p2-r7" data-value="7"><div class="face"></div></div>
+        <div class="card clubs rank8 p2-r8" data-value="8"><div class="face"></div></div>
+        <div class="card clubs rank9 p2-r9" data-value="9"><div class="face"></div></div>
+        <div class="card clubs rank10 p2-r10" data-value="10"><div class="face"></div></div>
+        <div class="card clubs rank11 p2-r11" data-value="11"><div class="face"></div></div>
+        <div class="card clubs rank12 p2-r12" data-value="12"><div class="face"></div></div>
+        <div class="card clubs rank13 p2-r13"data-value="13"><div class="face"></div></div>
+      </article>
+      <!-- <article>
+        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" style="z-index: 1;">
+          <div class="toast-header">
+            <img src="..." class="rounded mr-2" alt="...">
+            <strong class="mr-auto">Bootstrap</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
+          <div class="toast-body"></div>
         </div>
-      </div>
-      </article>
+      </article> -->
     </main>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -66,36 +84,39 @@
 
       // display it in a html container
       var $container = document.getElementById('game-play');
-      // deck.mount($container);
+      deck.mount($container);
 
       // Select the first card
       var card = deck.cards[0];
 
       // Add it to an html container
-      // card.mount($container);
+      card.mount($container);
 
-      // deck.bysuit();
-      // card.flip();
+      // card.setSide('front');
+      // card.setSide('back');
+
+      var removedCards = deck.cards.splice(0, 39);
+
+      removedCards.forEach(function (removedCard) {
+          removedCard.unmount();
+      });
+
 
       deck.cards.forEach(function (card){
-        card.enableDragging();
+        // card.enableDragging();
         card.enableFlipping();
+        // deck.shuffle();
+        // card.enableFlipping();
+        // deck.shuffle({duration: 500});
       })
     </script>
 
     <script>
-      // Identify the IP address and PORT that a socket will connect to.
-      const socket = io.connect('localhost:8081');
 
-      // Handler function for receiving player info assignment messages
-      socket.on('connect', function () {
-        socket.emit('socketAssignment')
-      })
+      $(document).ready(function(){
 
-      // Handler function for welcome message
-      socket.on('welcome', function (message) {
-        console.log(JSON.parse(message));
-      });
+        // Identify the IP address and PORT that a socket will connect to.
+        const socket = io.connect('http://172.46.2.110:8081');
 
       // Handler function for choice message
       socket.on('pleaseChoose', function (message, gameID) {
@@ -108,61 +129,86 @@
         })
       })
 
-      socket.on('Selected', function () {
-        console.log('Thank you. Please wait for your opponent to select a card.')
-      })
+        function showNotification () {
+          $('.toast').toast('show');
+        }
 
-      socket.on('lose', function (message) {
-        console.log(message);
-      })
+        function hideNotification() {
+          $('.toast').toast('hide');
+        }
 
-      socket.on('win', function (message) {
-        console.log(message);
-      })
 
-      socket.on('draw', function (message) {
-        console.log(message);
-      })
-
-      socket.on('endgame', function (message) {
-        console.log(message)
-      })
-
-      socket.on('drawgame', function (message) {
-        console.log(message)
-      })
-/*
-      socket.on('player1turn', function (message) {
-        console.log(message)
-        $('.card').click(function (event) {
-          event.preventDefault()
-          console.log('Click detected. The card picked is a', $(this).data('value'))
-          $(this).hide();
-          socket.send($(this).data('value'))
+        // Handler function for receiving player info assignment messages
+        socket.on('connect', function () {
+          socket.emit('socketAssignment')
+          // $('.toast .toast-body').prepend('Waiting for opponent...')
+          // showNotification();
         })
-      })
-*/
 
+        socket.on('pending', function (message) {
+          $('.toast .toast-body').append(message)
+          showNotification();
+        })
 
+        socket.on('foundopponent', function (message) {
+          $('.toast .toast-body').empty();
+          $('.toast .toast-body').append(message);
+          showNotication();
+        })
 
-
-
-      // socket.emit ('cardselect', process.argv)
-      // socket.on('cardselect', function (arg) {
-
-      // })
-    </script>
-
-    <script>
-    $(document).ready(function(){
-      function gameTurn() {
-        $(".notify-turn").click(function(){
-          $('.toast').toast('show', 10000);
+        // Handler function for welcome message
+        socket.on('welcome', function (message) {
+          console.log(JSON.parse(message));
+          // hideNotification();
+          // $('.toast .toast-body').empty();
+          // $('.toast .toast-body').prepend(message)
+          // showNotification();
         });
-      }
-      gameTurn();
-    });
+
+        // Handler function for choice message
+        socket.on('pleaseChoose', function (message) {
+          console.log(message)
+
+          // hideNotification();
+          // $('.toast .toast-body').empty();
+          // $('.toast .toast-body').prepend(message);
+          // showNotification();
+
+          $('.player2-cards .card').click(function (event) {
+            event.preventDefault();
+            $('.card').off('click');
+            $(this).hide();
+            socket.emit('cardChoice', $(this).data('value'));
+          })
+        })
+
+        socket.on('Selected', function () {
+          console.log('Thank you. Please wait for your opponent to select a card.')
+        })
+
+        socket.on('lose', function (message) {
+          console.log(message);
+        })
+
+        socket.on('win', function (message) {
+          console.log(message);
+        })
+
+        socket.on('draw', function (message) {
+          console.log(message);
+        })
+
+        socket.on('endgame', function (message) {
+          console.log(message)
+        })
+
+        socket.on('drawgame', function (message) {
+          console.log(message)
+        })
+
+      });
     </script>
+
   </body>
 </html>
 
