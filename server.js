@@ -305,7 +305,6 @@ io.on('connection', function(socket){
       )
 
     // If there's a draw, do nothing.
-    // Send the winner a message and the loser a message;:
 
     if (gameInfo[gameID][player1].bet !== gameInfo[gameID][player2].bet) {
 
@@ -341,6 +340,8 @@ io.on('connection', function(socket){
     }
     else {
 
+      io.emit('removeCard');
+
       let gameWinner;
       let gameLoser;
 
@@ -356,7 +357,7 @@ io.on('connection', function(socket){
 
         await finishGame(gameID, gameWinner.username);
 
-        io.emit('endgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score} Player two's final score is ${gameInfo[gameID][player2].score} ${gameWinner['designation']} is the winner!`)
+        io.emit('endgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score}. Player two's final score is ${gameInfo[gameID][player2].score}. ${gameInfo[gameID][player1].username} is the winner!`)
       } else {
         io.emit('drawgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score} Player two's final score is ${gameInfo[gameID][player2].score} There is no clear winner here, but that's okay. Everyone's a winner in god's eyes lmao.`)
       }
