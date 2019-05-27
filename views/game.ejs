@@ -42,7 +42,7 @@
         <div class="card p1-r13"data-value="13"><div class="back"></div></div>
       </article>
       <article id="game-play"></article>
-      <article class="player2cards">
+      <article class="player2-cards">
         <div class="card clubs rank1 p2-r1" data-value="1"> <div class="face"></div></div>
         <div class="card clubs rank2 p2-r2" data-value="2"><div class="face"></div></div>
         <div class="card clubs rank3 p2-r3" data-value="3"><div class="face"></div></div>
@@ -87,15 +87,26 @@
       var card = deck.cards[0];
 
       // Add it to an html container
-      // card.mount($container);
+      card.mount($container);
 
       // deck.bysuit();
       // card.flip();
 
-      // deck.cards.forEach(function (card){
-      //   card.enableDragging();
-      //   card.enableFlipping();
-      // })
+      // card.setSide('front');
+      // card.setSide('back');
+
+      var removedCards = deck.cards.splice(0, 39);
+
+      removedCards.forEach(function (removedCard) {
+          removedCard.unmount();
+      });
+
+
+      deck.cards.forEach(function (card){
+        // card.enableDragging();
+        card.enableFlipping();
+        deck.shuffle();
+      })
     </script>
 
     <script>
@@ -177,6 +188,12 @@
       }
       gameTurn();
     });
+
+    $(document).ready(function(){
+     $('article.player1-cards').addClass('hide');
+     $('article.player2-cards').addClass('hide')
+    });
+
     </script>
   </body>
 </html>

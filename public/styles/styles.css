@@ -164,6 +164,9 @@ body main.game article.player2 .card {
   top: 60%;
   left: 30%;
 }
+body main.game .hide {
+  display: none;
+}
 body main.leaderboard {
   background: white;
 }
