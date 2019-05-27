@@ -126,6 +126,7 @@
           {
             $('#game-play').append(`<div class="card rank${prizeCards[i]} ${prizeSuit}" data-value="${prizeCards[i]}"><div class="face"></div></div>`);
           }
+
           $('#game-play').append('<div style="z-index: -100"></div>')
 
         });
@@ -135,13 +136,16 @@
             $('.toast .toast-body').empty().append(message);
             showNotification();
 
+            alert("HEY!!!!");
+
+            $('#game-play > div:last-of-type').remove();
+
             $('.player2-cards .card').click(function (event) {
               event.preventDefault();
               $('.card').off('click');
               $(this).hide();
               socket.emit('cardChoice', $(this).data('value'), gameID);
             })
-
         })
 
         socket.on('notDraw', function (message) {
