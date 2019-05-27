@@ -360,19 +360,11 @@ io.on('connection', function(socket) {
 
     if (roundScores[roundNumber][p1id] !== roundScores[roundNumber][p2id]) {
       io.to(`${roundLoser}`).emit('lose',
-        `You played ${roundScores[roundNumber][roundLoser]}.
-        Your opponent played ${roundScores[roundNumber][roundWinner]}
-        Your opponent had the high card.
-        Your current score: ${playerInfo[roundLoser]['score']}
-        Your opponent's score: ${playerInfo[roundWinner]['score']}`
+        `You played ${roundScores[roundNumber][roundLoser]}. Your opponent played ${roundScores[roundNumber][roundWinner]}. Your opponent had the high card. Your current score: ${playerInfo[roundLoser]['score']}. Your opponent's score: ${playerInfo[roundWinner]['score']}.`
         )
 
       io.to(`${roundWinner}`).emit('win',
-        `You played ${roundScores[roundNumber][roundWinner]}.
-        Your opponent played ${roundScores[roundNumber][roundLoser]}
-        Congratulations, you had the high card.
-        Your current score: ${playerInfo[roundWinner]['score']}
-        Your opponent's score: ${playerInfo[roundLoser]['score']}`
+        `You played ${roundScores[roundNumber][roundWinner]}. Your opponent played ${roundScores[roundNumber][roundLoser]}. Congratulations, you had the high card. Your current score: ${playerInfo[roundWinner]['score']}. Your opponent's score: ${playerInfo[roundLoser]['score']}.`
         )
     }
 
@@ -390,17 +382,10 @@ io.on('connection', function(socket) {
         gameLoser = p1id
       }
       if (playerInfo[p1id]['score'] !== playerInfo[p2id]['score']) {
-        io.emit('endgame', `The game is over.
-          Player one's final score is ${playerInfo[p1id]['score']}
-          Player two's final score is ${playerInfo[p2id]['score']}
-          ${playerInfo[gameWinner]['designation']} is the winner!
+        io.emit('endgame', `The game is over. Player one's final score is ${playerInfo[p1id]['score']}. Player two's final score is ${playerInfo[p2id]['score']}. ${playerInfo[gameWinner]['designation']} is the winner!
           `)
       } else {
-        io.emit('drawgame', `The game is over.
-          Player one's final score is ${playerInfo[p1id]['score']}
-          Player two's final score is ${playerInfo[p2id]['score']}
-          There is no clear winner here, but that's okay.
-          Everyone's a winner in god's eyes lmao.
+        io.emit('drawgame', `The game is over. Player one's final score is ${playerInfo[p1id]['score']}. Player two's final score is ${playerInfo[p2id]['score']}. There is no clear winner here, but that's okay. Everyone's a winner in god's eyes lmao.
           `)
       }
     }
@@ -411,9 +396,7 @@ io.on('connection', function(socket) {
     prizeCard = prizeDeck.pop();
 
     // Send message
-    io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over.
-        It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}.
-        Please select a card.`);
+    io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over. It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}. Please select a card.`);
   }
 
    // Assigning the player's values to the object
@@ -537,11 +520,7 @@ io.on('connection', function(socket) {
     // req.end;
 
 
-    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game.
-        Player one's suit is ${suits[playerInfo[p1id].suit]}.
-        Player two's suit is ${suits[playerInfo[p2id].suit]}.
-        The prize suit is ${suits[prizeSuit]}.
-        Game is starting now.`)
+    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[playerInfo[p1id].suit]}. Player two's suit is ${suits[playerInfo[p2id].suit]}. The prize suit is ${suits[prizeSuit]}. Game is starting now.`)
       )
   } // This closes the main game function
 
