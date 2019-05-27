@@ -57,8 +57,8 @@
         <div class="card clubs rank12 p2-r12" data-value="12"><div class="face"></div></div>
         <div class="card clubs rank13 p2-r13"data-value="13"><div class="face"></div></div>
       </article>
-      <article>
-        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" style="z-index: 100;">
+      <!-- <article>
+        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" style="z-index: 1;">
           <div class="toast-header">
             <img src="..." class="rounded mr-2" alt="...">
             <strong class="mr-auto">Bootstrap</strong>
@@ -68,7 +68,7 @@
           </div>
           <div class="toast-body"></div>
         </div>
-      </article>
+      </article> -->
     </main>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -92,9 +92,6 @@
       // Add it to an html container
       card.mount($container);
 
-      // deck.bysuit();
-      // card.flip();
-
       // card.setSide('front');
       // card.setSide('back');
 
@@ -109,6 +106,8 @@
         // card.enableDragging();
         card.enableFlipping();
         // deck.shuffle();
+        // card.enableFlipping();
+        // deck.shuffle({duration: 500});
       })
     </script>
 
@@ -127,6 +126,7 @@
           $('.toast').toast('hide');
         }
 
+
         // Handler function for receiving player info assignment messages
         socket.on('connect', function () {
           socket.emit('socketAssignment')
@@ -140,12 +140,10 @@
         })
 
         socket.on('foundopponent', function (message) {
-          hideNotification();
           $('.toast .toast-body').empty();
           $('.toast .toast-body').append(message);
-          showNotification();
+          showNotication();
         })
-
 
         // Handler function for welcome message
         socket.on('welcome', function (message) {
