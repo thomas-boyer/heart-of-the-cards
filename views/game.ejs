@@ -59,16 +59,16 @@
       </article>
       <!-- <article>
         <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" style="z-index: 1;">
-          <div class="toast-header">
+          <!-- <div class="toast-header">
             <img src="..." class="rounded mr-2" alt="...">
             <strong class="mr-auto">Bootstrap</strong>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-          </div>
+          </div> -->
           <div class="toast-body"></div>
         </div>
-      </article> -->
+      </article>
     </main>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -108,6 +108,7 @@
         // deck.shuffle();
         // card.enableFlipping();
         // deck.shuffle({duration: 500});
+
       })
     </script>
 
@@ -116,6 +117,7 @@
       $(document).ready(function(){
 
         // Identify the IP address and PORT that a socket will connect to.
+
         const socket = io.connect('http://172.46.2.43:8081');
 
       // Handler function for choice message
@@ -141,8 +143,8 @@
         // Handler function for receiving player info assignment messages
         socket.on('connect', function () {
           socket.emit('socketAssignment')
-          // $('.toast .toast-body').prepend('Waiting for opponent...')
-          // showNotification();
+          $('.toast .toast-body').prepend('Waiting for opponent...')
+          showNotification();
         })
 
         socket.on('pending', function (message) {
@@ -168,16 +170,17 @@
           // $('.toast .toast-body').empty();
           // $('.toast .toast-body').prepend(message)
           // showNotification();
+
         });
 
         // Handler function for choice message
         socket.on('pleaseChoose', function (message) {
           console.log(message)
 
-          // hideNotification();
-          // $('.toast .toast-body').empty();
-          // $('.toast .toast-body').prepend(message);
-          // showNotification();
+          hideNotification();
+          $('.toast .toast-body').empty();
+          $('.toast .toast-body').prepend(message);
+          showNotification();
 
           $('.player2-cards .card').click(function (event) {
             event.preventDefault();

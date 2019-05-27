@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 
-const PORT        = process.env.PORT || 8081;
+const PORT        = process.env.PORT || 8080;
 const ENV         = process.env.ENV || "development";
 const express     = require("express");
 const bodyParser  = require("body-parser");
@@ -463,7 +463,11 @@ io.on('connection', async (socket) => {
       gameInfo[gameID][player2].cardString += Object.values(card) + ' ';
     }
 
+<<<<<<< HEAD
+    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[gameInfo[gameID][player1].suit]}. Player two's suit is ${suits[gameInfo[gameID][player2].suit]}. The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}. Game is starting now.`));
+=======
     io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[gameInfo[gameID][player1].suit]}. Player two's suit is ${suits[gameInfo[gameID][player2].suit]}. The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}. Game is starting now.`), suits[gameInfo[gameID][player1].suit], suits[gameInfo[gameID][player2].suit], suits[gameInfo[gameID].prizeSuit]);
+>>>>>>> master
   } // This closes the main game function
 
 }); // This is closing the socket connection

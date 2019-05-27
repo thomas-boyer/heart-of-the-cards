@@ -169,6 +169,11 @@ body main.game .hide {
 }
 body main.leaderboard {
   background: white;
+  max-width: 1000px;
+  width: 100%;
+  margin: 3em auto;
+  border-raidus: 15px;
+  text-align: center;
 }
 body main.archive article {
   display: flex;
