@@ -43,19 +43,19 @@
       </article>
       <article id="game-play"></article>
       <article class="player2-cards">
-        <div class="card clubs rank1 p2-r1" data-value="1"> <div class="face"></div></div>
-        <div class="card clubs rank2 p2-r2" data-value="2"><div class="face"></div></div>
-        <div class="card clubs rank3 p2-r3" data-value="3"><div class="face"></div></div>
-        <div class="card clubs rank4 p2-r4" data-value="4"><div class="face"></div></div>
-        <div class="card clubs rank5 p2-r5" data-value="5"><div class="face"></div></div>
-        <div class="card clubs rank6 p2-r6" data-value="6"><div class="face"></div></div>
-        <div class="card clubs rank7 p2-r7" data-value="7"><div class="face"></div></div>
-        <div class="card clubs rank8 p2-r8" data-value="8"><div class="face"></div></div>
-        <div class="card clubs rank9 p2-r9" data-value="9"><div class="face"></div></div>
-        <div class="card clubs rank10 p2-r10" data-value="10"><div class="face"></div></div>
-        <div class="card clubs rank11 p2-r11" data-value="11"><div class="face"></div></div>
-        <div class="card clubs rank12 p2-r12" data-value="12"><div class="face"></div></div>
-        <div class="card clubs rank13 p2-r13"data-value="13"><div class="face"></div></div>
+        <div class="card rank1 p2-r1" data-value="1"> <div class="face"></div></div>
+        <div class="card rank2 p2-r2" data-value="2"><div class="face"></div></div>
+        <div class="card rank3 p2-r3" data-value="3"><div class="face"></div></div>
+        <div class="card rank4 p2-r4" data-value="4"><div class="face"></div></div>
+        <div class="card rank5 p2-r5" data-value="5"><div class="face"></div></div>
+        <div class="card rank6 p2-r6" data-value="6"><div class="face"></div></div>
+        <div class="card rank7 p2-r7" data-value="7"><div class="face"></div></div>
+        <div class="card rank8 p2-r8" data-value="8"><div class="face"></div></div>
+        <div class="card rank9 p2-r9" data-value="9"><div class="face"></div></div>
+        <div class="card rank10 p2-r10" data-value="10"><div class="face"></div></div>
+        <div class="card rank11 p2-r11" data-value="11"><div class="face"></div></div>
+        <div class="card rank12 p2-r12" data-value="12"><div class="face"></div></div>
+        <div class="card rank13 p2-r13"data-value="13"><div class="face"></div></div>
       </article>
       <!-- <article>
         <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" style="z-index: 1;">
@@ -76,48 +76,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="deck-of-cards/dist/deck.min.js"></script>
-
-    <script>
-      // Instantiate a deck
-      var deck = Deck();
-      console.log(deck);
-
-      // display it in a html container
-      var $container = document.getElementById('game-play');
-      deck.mount($container);
-
-      // Select the first card
-      var card = deck.cards[0];
-
-      // Add it to an html container
-      card.mount($container);
-
-      // card.setSide('front');
-      // card.setSide('back');
-
-      var removedCards = deck.cards.splice(0, 39);
-
-      removedCards.forEach(function (removedCard) {
-          removedCard.unmount();
-      });
-
-
-      deck.cards.forEach(function (card){
-        // card.enableDragging();
-        card.enableFlipping();
-        // deck.shuffle();
-        // card.enableFlipping();
-        // deck.shuffle({duration: 500});
-
-      })
-    </script>
-
     <script>
 
       $(document).ready(function(){
 
         // Identify the IP address and PORT that a socket will connect to.
-        const socket = io.connect('http://172.46.2.110:8080');
+        const socket = io.connect('http://localhost:3000');
+
+        // // Instantiate a deck
+        // var deck = Deck();
+
+        // // display it in a html container
+        // var $container = document.getElementById('game-play');
+        // deck.mount($container);
+
+        // // Select the first card
+        // var card = deck.cards[0];
+
+        // // Add it to an html container
+        // card.mount($container);
+
+        // // card.setSide('front');
+        // // card.setSide('back');
+
+        // var removedCards = deck.cards.splice(0, 39);
+
+        // removedCards.forEach(function (removedCard) {
+        //     removedCard.unmount();
+        // });
+
+
+        // deck.cards.forEach(function (card){
+        //   // card.enableDragging();
+        //   card.enableFlipping();
+        //   // deck.shuffle();
+        //   // card.enableFlipping();
+        //   // deck.shuffle({duration: 500});
+
+        // })
 
         function showNotification () {
           $('.toast').toast('show');
@@ -138,17 +134,30 @@
         })
 
         socket.on('foundopponent', function (message) {
+
           $('.toast .toast-body').empty().append(message);
+
           showNotification();
         })
 
-        // Handler function for welcome message
-        socket.on('welcome', function (message, playerOneSuit, playerTwoSuit, prizeSuit) {
-          console.log(JSON.parse(message));
+        socket.on('removeCard', function()
+          {
+            console.log("HIIIIII");
 
-          $('.player1-cards div').addClass(playerOneSuit);
-          $('.player2-cards div').addClass(playerTwoSuit);
-          $('#game-play div').addClass(prizeSuit);
+            $('#game-play > div:last-of-type').remove();
+          })
+
+        // Handler function for welcome message
+        socket.on('welcome', function (playerOneSuit, playerTwoSuit, prizeSuit, prizeCards) {
+
+          $('.player1-cards > div').addClass(playerOneSuit);
+          $('.player2-cards > div').addClass(playerTwoSuit);
+
+          for (let i = 0; i < 13; i++)
+          {
+            $('#game-play').append(`<div class="card rank${prizeCards[i]} ${prizeSuit}" data-value="${prizeCards[i]}"><div class="face"></div></div>`);
+          }
+          $('#game-play').append("<blockquote style="z-index: -100"></blockquote>")
 
           // hideNotification();
           // $('.toast .toast-body').empty();
@@ -158,9 +167,9 @@
         });
         // Handler function for choice message
         socket.on('pleaseChoose', function (message, gameID) {
-          console.log(message)
+          // let test = $('#game-play > div:last-of-type');
+          // console.log(test);
 
-          setTimeout(function () {
             $('.toast .toast-body').empty().append(message);
             showNotification();
 
@@ -170,41 +179,25 @@
               $(this).hide();
               socket.emit('cardChoice', $(this).data('value'), gameID);
             })
-          }, 1000);
 
         })
 
-        socket.on('Selected', function () {
-          $('.toast .toast-body').empty().append('Thank you. Please wait for your opponent to select a card.')
-          showNotification();
-        })
-
-        socket.on('lose', function (message) {
-          console.log(message)
-          $('.toast .toast-body').empty().append(message);
-          showNotification();
-        })
-
-        socket.on('win', function (message) {
-          console.log(message);
+        socket.on('notDraw', function (message) {
           $('.toast .toast-body').empty().append(message);
           showNotification();
         })
 
         socket.on('draw', function (message) {
-          console.log(message);
           $('.toast .toast-body').empty().append(message);
           showNotification();
         })
 
         socket.on('endgame', function (message) {
-          console.log(message)
           $('.toast .toast-body').empty().append(message);
           showNotification();
         })
 
         socket.on('drawgame', function (message) {
-          console.log(message)
           $('.toast .toast-body').empty().append(message);
           showNotification();
         })
