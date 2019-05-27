@@ -127,18 +127,20 @@
             $('#game-play').append(`<div class="card rank${prizeCards[i]} ${prizeSuit}" data-value="${prizeCards[i]}"><div class="face"></div></div>`);
           }
 
-          $('#game-play').append('<div style="z-index: -100"></div>')
+          $('#game-play').append('<div></div>');
 
         });
+
+        // socket.on('removeCard', function()
+        // {
+        //   $('#game-play > div:last-of-type').remove();
+        // })
+
         // Handler function for choice message
         socket.on('pleaseChoose', function (message, gameID) {
 
             $('.toast .toast-body').empty().append(message);
             showNotification();
-
-            alert("HEY!!!!");
-
-            $('#game-play > div:last-of-type').remove();
 
             $('.player2-cards .card').click(function (event) {
               event.preventDefault();
