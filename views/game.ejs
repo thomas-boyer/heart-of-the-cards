@@ -98,12 +98,12 @@
       });
 
       // Handler function for choice message
-      socket.on('pleaseChoose', function (message) {
+      socket.on('pleaseChoose', function (message, gameID) {
         console.log(message)
         $('.card').click(function (event) {
           event.preventDefault()
           $(this).hide();
-          socket.emit('cardChoice', $(this).data('value'))
+          socket.emit('cardChoice', $(this).data('value'), gameID)
           $('.card').off('click');
         })
       })
