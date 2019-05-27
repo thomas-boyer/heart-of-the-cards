@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 
-const PORT        = process.env.PORT || 3000;
+const PORT        = process.env.PORT || 8080;
 const ENV         = process.env.ENV || "development";
 const express     = require("express");
 const bodyParser  = require("body-parser");
@@ -367,7 +367,7 @@ io.on('connection', function(socket){
     // Set prize.
     prizeCard = gameInfo[gameID].prizeDeck.pop();
 
-    // io.emit('removeCard');
+    io.emit('removeCard');
 
     // Send message
     io.emit('pleaseChoose', `Round ${gameInfo[gameID].roundNumber} : A prize card is flipped over. It is the ${cardKey[prizeCard]} of ${suits[gameInfo[gameID].prizeSuit]}. Please select a card.`, gameID);
@@ -484,7 +484,9 @@ io.on('connection', function(socket){
       gameInfo[gameID][player2].cardString += Object.values(card) + ' ';
     }
 
+
     io.emit('welcome', suits[gameInfo[gameID][player1].suit], suits[gameInfo[gameID][player2].suit], suits[gameInfo[gameID].prizeSuit], gameInfo[gameID].prizeDeck);
+
   } // This closes the main game function
 
 }); // This is closing the socket connection
