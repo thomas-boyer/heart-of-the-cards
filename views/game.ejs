@@ -99,8 +99,15 @@
     </script>
 
     <script>
+
+      $(document).ready(function(){
+        function gameTurn() {
+          $('.toast').toast('show', 500000);
+        }
+      });
+
       // Identify the IP address and PORT that a socket will connect to.
-      const socket = io.connect('http://172.46.2.110:8081');
+      const socket = io.connect('http://172.46.2.110:8080');
 
       // Handler function for receiving player info assignment messages
       socket.on('connect', function () {
@@ -115,6 +122,8 @@
       // Handler function for choice message
       socket.on('pleaseChoose', function (message) {
         console.log(message)
+        $('.toast .toast-body').prepend(message)
+        gameTurn();
         $('.card').click(function (event) {
           event.preventDefault()
           $(this).hide();
@@ -149,16 +158,6 @@
 
     </script>
 
-    <script>
-    $(document).ready(function(){
-      function gameTurn() {
-        $(".notify-turn").click(function(){
-          $('.toast').toast('show', 10000);
-        });
-      }
-      gameTurn();
-    });
-    </script>
   </body>
 </html>
 
