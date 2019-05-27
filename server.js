@@ -9,10 +9,8 @@ const express     = require("express");
 const bodyParser  = require("body-parser");
 const sass        = require("node-sass-middleware");
 const app         = express();
-const http        = require('http');
 const server      = require('http').Server(app);
 const io          = require('socket.io')(server);
-const request     = require('request');
 
 const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
@@ -55,72 +53,6 @@ app.get("/gamecentre", (req, res) => {
   res.render("gamecentre", {
     page_name: 'gamecentre'
   });
-});
-
-app.post("/game/cardplayed", async (req, res) => {
-
-  let playerCards = await knex('game_players')
-    .select('player_cards').where(
-      {
-        game_id: req.body.gameID,
-        player_id: req.body.playerID
-      });
-
-  playerCards = playerCards[0].player_cards.filter(card => card != req.body.playedCard);
-
-  await knex('game_players')
-    .where(
-      {
-        game_id: req.body.gameID,
-        player_id: req.body.playerID
-      })
-    .update(
-      {
-        player_cards: playerCards,
-        player_bet: req.body.playedCard
-      });
-
-  res.end();
-});
-
-app.post("/game/start", async (req, res) => {
-
-  console.log("HERE");
-  console.log(req.body);
-
-  const gameMax = await knex('games').max('id');
-  const gameID = gameMax[0].max + 1;
-
-  const gamePlayerMax = await knex('game_players').max('id');
-  const gamePlayerID = gamePlayerMax[0].max + 1;
-
-  await knex('games')
-    // Determine the prize suit and prize deck order in front-end, and send that through request body
-    .insert({
-      id: gameID,
-      date_played: new Date(),
-      prize_suit: req.body.prizeSuit,
-      prize_deck: req.body.prizeDeck });
-    //Determine the player IDs and their suits in the front-end
-  await knex('game_players')
-    .insert([{
-      id: gamePlayerID,
-      game_id: gameID,
-      player_id: req.body.playerOne,
-      player_score: 0,
-      player_suit: req.body.playerOneSuit,
-      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
-    },
-    {
-      id: gamePlayerID + 1,
-      game_id: gameID,
-      player_id: req.body.playerTwo,
-      player_score: 0,
-      player_suit: req.body.playerTwoSuit,
-      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
-    }]);
-
-  res.end();
 });
 
 app.get("/game", (req, res) => {
@@ -202,22 +134,7 @@ const suits =
   3: 'diamonds'
 };
 
-let cardKey =
-[
-  {1: 'ace'},
-  {2: 2},
-  {3: 3},
-  {4: 4},
-  {5: 5},
-  {6: 6},
-  {7: 7},
-  {8: 8},
-  {9: 9},
-  {10: 10},
-  {11: 'jack'},
-  {12: 'queen'},
-  {13: 'king'}
-]
+let cardValues = [1,2,3,4,5,6,7,8,9,10,11,12,13];
 
 const playerOneCards =
 [
@@ -253,41 +170,15 @@ const playerTwoCards =
   {13: 'king'}
 ]
 
-const prizeDeck = [];
-
 let availableSuits = [0,1,2,3];
 
-let playerInfo = {}
-  // socket id : {}
-  //   designation: player1
-  //   id : socket.id
-  //   score: 0
-  //   turn: true
-  //.  opId: //
-  //   cardString:
-  //   cumScore:
-  // }
+let gameInfo = {};
 
 let connectCounter = 0;
 let p1id;
 let p2id;
 
 let roundNumber = 1;
-let roundScores = {
-  1 : {},
-  2 : {},
-  3 : {},
-  4 : {},
-  5 : {},
-  6 : {},
-  7 : {},
-  8 : {},
-  9 : {},
-  10 : {},
-  11 : {},
-  12 : {},
-  13 : {}
-};
 
 let roundWinner;
 let roundLoser;
@@ -299,122 +190,204 @@ let prizeCard;
 let prizeSuit;
 
 // Whenever a new socket connects
-io.on('connection', function(socket) {
+io.on('connection', async (socket) => {
   console.log(`User ${socket.id} has connected to the game.`);
 
-  let cookie = socket.handshake.headers.cookie;
-  let idExcess = cookie.substring(cookie.indexOf("id=") + 3);
-  let id = idExcess.substring(0, idExcess.indexOf(";"));
-
-  //console.log("handshake:", handshake);
+  let gameID;
 
    // Track number of players connected, assignment of player designations
-  socket.on('socketAssignment', function () {
+  socket.on('socketAssignment', async () => {
+
     if (connectCounter === 0) {
-      p1id = socket.id
-      playerInfo[socket.id] = {
-        username: id,
-        designation: 'player1',
-        id: socket.id,
-        score: 0
+      gameID = await writeNewGame();
+
+      let cookie = socket.handshake.headers.cookie;
+      let userID = cookie.substring(cookie.indexOf("id=") + 3);
+      if (userID.includes(';'))
+      {
+        userID = userID.substring(0, userID.indexOf(";"));
       }
+
+      p1id = socket.id;
+
+      gameInfo[gameID] = {};
+      gameInfo[gameID][p1id] =
+      {
+        username : userID,
+        designation : 'player1',
+        id : socket.id,
+        score : 0,
+        bet : null,
+        cards : [1,2,3,4,5,6,7,8,9,10,11,12,13]
+      }
+
     connectCounter++
     io.to(`${socket.id}`).emit('pending', 'Waiting for an opponent...');
     console.log(connectCounter, 'players now connected')
 
     } else if (connectCounter === 1) {
-      p2id = socket.id
-      playerInfo[socket.id] = {
-        username: id,
-        designation: 'player2',
-        id: socket.id,
-        score: 0,
-        opId: playerInfo[p1id]['id']
+
+      let gameID = await joinExistingGame();
+
+      let cookie = socket.handshake.headers.cookie;
+      let userID = cookie.substring(cookie.indexOf("id=") + 3);
+      if (userID.includes(';'))
+      {
+        userID = userID.substring(0, userID.indexOf(";"));
       }
-      playerInfo[p1id]['opId'] = playerInfo[p2id]['id'];
+
+      p2id = socket.id;
+
+      p1id = Object.keys(gameInfo[gameID])[0];
+
+      gameInfo[gameID][p2id] =
+      {
+        username : userID,
+        designation : 'player2',
+        id : socket.id,
+        score : 0,
+        opId : p1id,
+        bet : null,
+        cards : [1,2,3,4,5,6,7,8,9,10,11,12,13]
+      }
+
+      gameInfo[gameID][p1id].opId = p2id;
 
       connectCounter++;
       console.log(connectCounter, 'players now connected')
+
       io.emit('foundopponent', 'Opponent found, game starting...')
-      mainGame();
-      newRound();
+      await mainGame(gameID, gameInfo[gameID][p1id].id, gameInfo[gameID][p2id].id);
+      newRound(gameID);
     }
   })
 
-  const calculateWinner = function () {
-    if (roundScores[roundNumber][p1id] > roundScores[roundNumber][p2id]) {
-      roundWinner = p1id
-      roundLoser = p2id
-      playerInfo[p1id]['score'] += Number(Object.keys(prizeCard)[0])
+  const calculateWinner = async (gameID, player1, player2) => {
 
-    } else if (roundScores[roundNumber][p2id] > roundScores[roundNumber][p1id]) {
-      roundWinner = p2id
-      roundLoser = p1id
-      playerInfo[p2id]['score'] += Number(Object.keys(prizeCard)[0])
+    let roundWinner;
+    let roundLoser;
 
-    } else if (roundScores[roundNumber][p1id] == roundScores[roundNumber][p2id])
+    if (gameInfo[gameID][player1].bet > gameInfo[gameID][player2].bet) {
+      roundWinner = player1;
+      roundLoser = player2;
+      gameInfo[gameID][player1].score += prizeCard;
+
+    } else if (gameInfo[gameID][player1].bet < gameInfo[gameID][player2].bet) {
+      roundWinner = player2;
+      roundLoser = player1;
+      gameInfo[gameID][player2].score += prizeCard;
+
+    } else if (gameInfo[gameID][player1].bet === gameInfo[gameID][player2].bet)
       io.emit('draw',
         `Both players chose the same card. Nobody gets the point.`
       )
+
     // If there's a draw, do nothing.
     // Send the winner a message and the loser a message;:
 
-    if (roundScores[roundNumber][p1id] !== roundScores[roundNumber][p2id]) {
+    if (gameInfo[gameID][player1].bet !== gameInfo[gameID][player2].bet) {
       io.to(`${roundLoser}`).emit('lose',
-        `You played ${roundScores[roundNumber][roundLoser]}. Your opponent played ${roundScores[roundNumber][roundWinner]}. Your opponent had the high card. Your current score: ${playerInfo[roundLoser]['score']}. Your opponent's score: ${playerInfo[roundWinner]['score']}.`
+        `You played ${gameInfo[gameID][roundLoser].bet}. Your opponent played ${gameInfo[gameID][roundWinner].bet} Your opponent had the high card. Your current score: ${gameInfo[gameID][roundLoser].score} Your opponent's score: ${gameInfo[gameID][roundWinner].score}.`
         )
 
       io.to(`${roundWinner}`).emit('win',
-        `You played ${roundScores[roundNumber][roundWinner]}. Your opponent played ${roundScores[roundNumber][roundLoser]}. Congratulations, you had the high card. Your current score: ${playerInfo[roundWinner]['score']}. Your opponent's score: ${playerInfo[roundLoser]['score']}.`
+        `You played ${gameInfo[gameID][roundWinner].bet}. Your opponent played ${gameInfo[gameID][roundLoser].bet}. Congratulations, you had the high card. Your current score: ${gameInfo[gameID][roundWinner].score} Your opponent's score: ${gameInfo[gameID][roundLoser].score}.`
         )
+
     }
+    gameInfo[gameID][player1].bet = null;
+    gameInfo[gameID][player2].bet = null;
 
-    roundNumber++
-    console.log('We are at the start of round', roundNumber)
+    console.log("Game INFO:", gameInfo);
 
-    if (roundNumber <= 13) {
-      newRound();
-    } else {
-      if (playerInfo[p1id]['score'] > playerInfo[p2id]['score']) {
-        gameWinner = p1id
-        gameLoser = p2id
-      } else if (playerInfo[p2id]['score'] > playerInfo[p1id]['score']) {
-        gameWinner = p2id
-        gameLoser = p1id
+    gameInfo[gameID].roundNumber++;
+
+    await updateGame(gameID,
+    {
+      prizeDeck: gameInfo[gameID].prizeDeck,
+      playerOne: gameInfo[gameID][player1].username,
+      playerTwo: gameInfo[gameID][player2].username,
+      playerOneScore: gameInfo[gameID][player1].score,
+      playerTwoScore: gameInfo[gameID][player2].score,
+    });
+
+
+    console.log('We are at the start of round', gameInfo[gameID].roundNumber)
+
+
+    if (gameInfo[gameID].prizeDeck.length > 0) {
+      newRound(gameID);
+    }
+    else {
+
+      let gameWinner;
+      let gameLoser;
+
+      if (gameInfo[gameID][player1].score > gameInfo[gameID][player2].score) {
+        gameWinner = gameInfo[gameID][player1];
+        gameLoser = gameInfo[gameID][player2];
+      } else if (gameInfo[gameID][player2].score > gameInfo[gameID][player1].score) {
+        gameWinner = gameInfo[gameID][player2];
+        gameLoser = gameInfo[gameID][player1];
       }
-      if (playerInfo[p1id]['score'] !== playerInfo[p2id]['score']) {
-        io.emit('endgame', `The game is over. Player one's final score is ${playerInfo[p1id]['score']}. Player two's final score is ${playerInfo[p2id]['score']}. ${playerInfo[gameWinner]['designation']} is the winner!
-          `)
+
+      if (gameInfo[gameID][player1].score !== gameInfo[gameID][player2].score) {
+
+        await finishGame(gameID, gameWinner.username);
+
+        io.emit('endgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score} Player two's final score is ${gameInfo[gameID][player2].score} ${gameWinner['designation']} is the winner!`)
       } else {
-        io.emit('drawgame', `The game is over. Player one's final score is ${playerInfo[p1id]['score']}. Player two's final score is ${playerInfo[p2id]['score']}. There is no clear winner here, but that's okay. Everyone's a winner in god's eyes lmao.
-          `)
+        io.emit('drawgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score} Player two's final score is ${gameInfo[gameID][player2].score} There is no clear winner here, but that's okay. Everyone's a winner in god's eyes lmao.`)
       }
     }
   }
 
-  const newRound = function () {
+  const newRound = function (gameID) {
     // Set prize.
-    prizeCard = prizeDeck.pop();
+    prizeCard = gameInfo[gameID].prizeDeck.pop();
 
     // Send message
-    io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over. It is the ${Object.values(prizeCard)} of ${suits[prizeSuit]}. Please select a card.`);
+    io.emit('pleaseChoose', `Round ${roundNumber} : A prize card is flipped over. It is the ${Object.values(prizeCard)} of ${suits[gameInfo[gameID].prizeSuit]}. Please select a card.`, gameID);
   }
 
    // Assigning the player's values to the object
-  socket.on('cardChoice', (cardValue) => {
-    for (let player in playerInfo) {
+  socket.on('cardChoice', async (cardValue, gameID) => {
+    for (let player in gameInfo[gameID]) {
       if (player === socket.id) {
-        // Assign player score for the round:
-        roundScores[roundNumber][playerInfo[player]['id']] = cardValue
-        // Remove the card played from the player's hand:
-        playerInfo[player]['cardString'] = playerInfo[player]['cardString'].replace(` ${cardKey[cardValue - 1][cardValue]}`, '')
+
+        let playerCards = gameInfo[gameID][player].cards;
+
+        // Assign player bet for the round:
+        gameInfo[gameID][player].bet = cardValue;
+        let indexOfBet = playerCards.indexOf(cardValue);
+
+        if (indexOfBet === playerCards.length - 1)
+        {
+          playerCards.pop();
+        }
+        else playerCards.splice(indexOfBet, 1);
+
+        await knex('game_players')
+          .where(
+            {
+              game_id: gameID,
+              player_id: gameInfo[gameID][player].username
+            })
+          .update(
+            {
+              player_cards: playerCards,
+              player_bet: cardValue
+            });
+
+        let opId = gameInfo[gameID][player].opId;
+
+        if (gameInfo[gameID][player].bet && gameInfo[gameID][opId].bet) {
+          calculateWinner(gameID, player, opId);
+        }
       }
     }
-    console.log('The hand of', socket.id, playerInfo[socket.id]['cardString'])
+    //console.log('The hand of', socket.id, gameInfo[gameID][socket.id].cards)
     io.to(`${socket.id}`).emit('Selected')
-    if (roundScores[roundNumber][p1id] && roundScores[roundNumber][p2id]) {
-      calculateWinner();
-    }
   })
 
    //Whenever a socket disconnects
@@ -423,108 +396,175 @@ io.on('connection', function(socket) {
     connectCounter--;
   });
 
-  const mainGame = function () {
+  const mainGame = async (gameID, player1, player2) => {
     console.log('In the main game now.')
 
     // Generate random suit player one.
-    playerInfo[p1id].suit = availableSuits[Math.floor(Math.random() * 4)];
-    if (playerInfo[p1id].suit === availableSuits[availableSuits.length - 1])
+    gameInfo[gameID][player1].suit = availableSuits[Math.floor(Math.random() * 4)];
+    if (gameInfo[gameID][player1].suit === availableSuits[availableSuits.length - 1])
     {
       availableSuits.pop();
     }
-    else availableSuits.splice(availableSuits.indexOf(playerInfo[p1id].suit), 1);
+    else availableSuits.splice(availableSuits.indexOf(gameInfo[gameID][player1].suit), 1);
 
     // Generate random suit player two.
-    playerInfo[p2id].suit = availableSuits[Math.floor(Math.random() * 3)];
-    if (playerInfo[p2id].suit === availableSuits[availableSuits.length - 1])
+    gameInfo[gameID][player2].suit = availableSuits[Math.floor(Math.random() * 3)];
+    if (gameInfo[gameID][player2].suit === availableSuits[availableSuits.length - 1])
     {
       availableSuits.pop();
     }
-    else availableSuits.splice(availableSuits.indexOf(playerInfo[p2id].suit), 1);
+    else availableSuits.splice(availableSuits.indexOf(gameInfo[gameID][player2].suit), 1);
 
     // Generate prize suit
-    prizeSuit = availableSuits[Math.floor(Math.random() * 2)];
-    if (prizeSuit === availableSuits[availableSuits.length - 1])
+    gameInfo[gameID].prizeSuit = availableSuits[Math.floor(Math.random() * 2)];
+    if (gameInfo[gameID].prizeSuit === availableSuits[availableSuits.length - 1])
     {
       availableSuits.pop();
     }
-    else availableSuits.splice(availableSuits.indexOf(prizeSuit), 1);
+    else availableSuits.splice(availableSuits.indexOf(gameInfo[gameID].prizeSuit), 1);
+
+    gameInfo[gameID].prizeDeck = [];
+    gameInfo[gameID].roundNumber = 1;
 
     for (let i = 0; i < 13; i++)
     {
-      let randomCardIndex = Math.floor(Math.random() * cardKey.length);
+      let randomCardIndex = Math.floor(Math.random() * cardValues.length);
       let randomCard;
-      if (randomCardIndex === cardKey.length)
+      if (randomCardIndex === cardValues.length)
       {
-        randomCard = cardKey.pop();
+        randomCard = cardValues.pop();
       }
-      else randomCard = cardKey.splice(randomCardIndex, 1)[0];
+      else randomCard = cardValues.splice(randomCardIndex, 1)[0];
 
-      prizeDeck.push(randomCard);
+      gameInfo[gameID].prizeDeck.push(randomCard);
     }
-    cardKey =
-    [
-      {1: 'ace'},
-      {2: 2},
-      {3: 3},
-      {4: 4},
-      {5: 5},
-      {6: 6},
-      {7: 7},
-      {8: 8},
-      {9: 9},
-      {10: 10},
-      {11: 'jack'},
-      {12: 'queen'},
-      {13: 'king'}
-    ];
 
-    // Create hand
+    await finalizeGame(
+      {
+        prize_suit: gameInfo[gameID].prizeSuit,
+        prize_deck: gameInfo[gameID].prizeDeck,
+        playerOne: gameInfo[gameID][player1].username,
+        playerTwo: gameInfo[gameID][player2].username,
+        playerOneSuit: gameInfo[gameID][player1].suit,
+        playerTwoSuit: gameInfo[gameID][player2].suit
+      }, gameID);
 
-    playerInfo[p1id].cardString = '';
+    gameInfo[gameID][player1].cardString = '';
 
-    playerInfo[p2id].cardString='';
+    gameInfo[gameID][player2].cardString='';
 
     for (let card of playerOneCards)
     {
-      playerInfo[p1id].cardString += Object.values(card) + ' ';
+      gameInfo[gameID][player1].cardString += Object.values(card) + ' ';
     }
 
     for (let card of playerTwoCards)
     {
-      playerInfo[p2id].cardString += Object.values(card) + ' ';
+      gameInfo[gameID][player2].cardString += Object.values(card) + ' ';
     }
 
-    console.log(playerInfo[p1id].username);
-    console.log(playerInfo[p2id].username);
-
-    // IN PROGRESS
-    // const req = http.request(
-    //   {
-    //     host: 'localhost',
-    //     port: 8081,
-    //     path: '/game/start',
-    //     method: 'POST',
-    //   });
-
-    // req.write(JSON.stringify({
-    //   prizeSuit,
-    //   prizeDeck,
-    //   playerOne: playerInfo[p1id].username,
-    //   playerTwo: playerInfo[p2id].username,
-    //   playerOneSuit: playerInfo[p1id].suit,
-    //   playerOneSuit: playerInfo[p2id].suit
-    // }));
-
-    // req.end;
-
-
-    io.emit('welcome', JSON.stringify(`Hi~! Welcome to Goofspiel. Game is starting now!`)
-      )
+    io.emit('welcome', JSON.stringify(`Hi~! Welcome to the test Goofspiel game. Player one's suit is ${suits[gameInfo[gameID][player1].suit]}. Player two's suit is ${suits[gameInfo[gameID][player2].suit]}. The prize suit is ${suits[gameInfo[gameID][prizeSuit]]}. Game is starting now.`);
   } // This closes the main game function
 
 }); // This is closing the socket connection
 
+const writeNewGame = async () =>
+{
+  const gameMax = await knex('games').max('id');
+  const gameID = gameMax[0].max + 1;
+
+  await knex('games')
+    .insert({ id: gameID });
+
+  return gameID;
+}
+
+const joinExistingGame = async () =>
+{
+  const availableGame = await knex('games')
+    .max('id').whereNull('date_played');
+
+  return availableGame[0].max;
+}
+
+const finalizeGame = async (data, gameID) =>
+{
+  const gamePlayerMax = await knex('game_players').max('id');
+  const gamePlayerID = gamePlayerMax[0].max + 1;
+
+  await knex('games')
+    .where('id', gameID)
+    // Determine the prize suit and prize deck order in front-end, and send that through request body
+    .update({
+      date_played: new Date(),
+      prize_suit: data.prize_suit,
+      prize_deck: data.prize_deck });
+    //Determine the player IDs and their suits in the front-end
+  await knex('game_players')
+    .insert([{
+      id: gamePlayerID,
+      game_id: gameID,
+      player_id: data.playerOne,
+      player_score: 0,
+      player_suit: data.playerOneSuit,
+      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    },
+    {
+      id: gamePlayerID + 1,
+      game_id: gameID,
+      player_id: data.playerTwo,
+      player_score: 0,
+      player_suit: data.playerTwoSuit,
+      player_cards: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    }]);
+}
+
+const updateGame = async (gameID, data) =>
+{
+  console.log("Player one:", data.playerOneScore)
+  console.log("Player two:", data.playerTwoScore)
+
+  await knex('games')
+    .where('id', gameID)
+    .update({ prize_deck: data.prizeDeck });
+
+  await knex('game_players')
+    .where(
+      {
+        'player_id': data.playerOne,
+        'game_id': gameID
+      })
+    .update(
+      {
+        player_score: data.playerOneScore
+      });
+
+    await knex('game_players').where(
+      {
+        'player_id': data.playerTwo,
+        'game_id': gameID
+      })
+    .update(
+      {
+        player_score: data.playerTwoScore
+      });
+}
+
+const finishGame = async (gameID, username) =>
+{
+  const query = await knex('players').select('games_won').where('id', username);
+
+  let gamesWon = query[0].games_won;
+  gamesWon++;
+
+
+  await knex('players')
+    .where('id', username)
+    .update(
+    {
+      games_won: gamesWon
+    });
+}
 
 server.listen(PORT, () => {
   console.log('Server is live on PORT:' + PORT);

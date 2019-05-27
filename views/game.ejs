@@ -118,6 +118,17 @@
         // Identify the IP address and PORT that a socket will connect to.
         const socket = io.connect('http://172.46.2.110:8081');
 
+      // Handler function for choice message
+      socket.on('pleaseChoose', function (message, gameID) {
+        console.log(message)
+        $('.card').click(function (event) {
+          event.preventDefault()
+          $(this).hide();
+          socket.emit('cardChoice', $(this).data('value'), gameID)
+          $('.card').off('click');
+        })
+      })
+
         function showNotification () {
           $('.toast').toast('show');
         }
