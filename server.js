@@ -10,7 +10,9 @@ const bodyParser  = require("body-parser");
 const sass        = require("node-sass-middleware");
 const app         = express();
 const server      = require('http').Server(app);
+
 const io          = require('socket.io')(server);
+const onConnect   = require('./socket/on-connect.js');
 
 const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
@@ -83,8 +85,6 @@ app.get("/login", (req, res) => {
   res.render("index");
 });
 
-///////////////////////////////////////THOMAS'S WORK
-
 app.get("/archive", (req, res) => {
   knex('games')
     .join('game_players', 'games.id', '=', 'game_players.game_id')
@@ -99,8 +99,6 @@ app.get("/archive", (req, res) => {
         res.render("archive", templateVars);
       });
 });
-
-///////////////////////////////////////END OF THOMAS'S WORK
 
 app.get("/leaderboard", (req, res) => {
 
@@ -357,9 +355,9 @@ io.on('connection', function(socket){
 
         await finishGame(gameID, gameWinner.username);
 
-        io.emit('endgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score}. Player two's final score is ${gameInfo[gameID][player2].score}. ${gameInfo[gameID][player1].username} is the winner!`)
+        io.emit('endgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score}. Player two's final score is ${gameInfo[gameID][player2].score}. ${gameInfo[gameID][gameWinner].username} is the winner!`)
       } else {
-        io.emit('drawgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score} Player two's final score is ${gameInfo[gameID][player2].score} There is no clear winner here, but that's okay. Everyone's a winner in god's eyes lmao.`)
+        io.emit('drawgame', `The game is over. Player one's final score is ${gameInfo[gameID][player1].score}. Player two's final score is ${gameInfo[gameID][player2].score}. There is no clear winner here, but that's okay. Everyone's a winner in god's eyes lmao.`)
       }
     }
   }
