@@ -1,8 +1,7 @@
-const cardValues = [1,2,3,4,5,6,7,8,9,10,11,12,13];
-
 function determinePrizeDeck(gameInfo, gameID)
 {
-  let prizeDeck = [];
+  const prizeDeck = [];
+  const cardValues = [1,2,3,4,5,6,7,8,9,10,11,12,13];
 
   for (let i = 0; i < 13; i++)
   {
