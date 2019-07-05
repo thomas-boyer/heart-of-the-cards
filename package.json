@@ -1,5 +1,5 @@
 {
-  "name": "node-skeleton",
+  "name": "heart-of-the-cards",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -9,7 +9,7 @@
     "local": "./node_modules/.bin/nodemon",
     "knex": "./node_modules/.bin/knex"
   },
-  "author": "Lighthouse Labs",
+  "author": "Thomas Boyer, Justin Kwok, and Kayley Luftig",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.2",

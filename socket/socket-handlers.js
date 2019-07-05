@@ -23,6 +23,8 @@ const socketAssignment = async (socketClient, socket, gameInfo, connectCounter) 
 {
   let cookie = socket.handshake.headers.cookie;
   let userID = cookie.substring(cookie.indexOf("id=") + 3);
+  let gameID;
+
   if (userID.includes(';'))
   {
     userID = userID.substring(0, userID.indexOf(";"));
@@ -49,7 +51,7 @@ const socketAssignment = async (socketClient, socket, gameInfo, connectCounter) 
 
     console.log(connectCounter, 'players now connected')
 
-    let gameID = await joinExistingGame();
+    gameID = await joinExistingGame();
     const game = gameInfo[gameID];
 
     p1id = Object.keys(game)[0];
