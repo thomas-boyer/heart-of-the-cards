@@ -52,6 +52,7 @@ const socketAssignment = async (socketClient, socket, gameInfo, connectCounter) 
     console.log(connectCounter, 'players now connected')
 
     gameID = await joinExistingGame();
+
     const game = gameInfo[gameID];
 
     p1id = Object.keys(game)[0];
@@ -71,7 +72,7 @@ const socketAssignment = async (socketClient, socket, gameInfo, connectCounter) 
 
     socketClient.emit('foundopponent', 'Opponent found, game starting...')
 
-    determineSuits(gameInfo, p1id, socket.id);
+    determineSuits(gameInfo, gameID, p1id, socket.id);
     game.prizeDeck = determinePrizeDeck(gameInfo, gameID);
     game.roundNumber = 1;
 

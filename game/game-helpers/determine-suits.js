@@ -1,4 +1,4 @@
-function determineSuits(gameInfo, player1, player2)
+function determineSuits(gameInfo, gameID, player1, player2)
 {
   let availableSuits = [0,1,2,3];
 
